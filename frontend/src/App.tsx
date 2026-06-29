@@ -15,6 +15,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HistoryIcon from '@mui/icons-material/History';
 import { DivIcon } from 'leaflet';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import { TripForm } from '@/components/organisms/TripForm';
 import { TripResults } from '@/components/organisms/TripResults';
 import { ErrorAlert } from '@/components/molecules/ErrorAlert';
@@ -76,6 +77,35 @@ function SyncRouteViewport({ coordinates }: { coordinates: RouteCoordinate[] }) 
       map.setView([coordinates[0].latitude, coordinates[0].longitude], 8);
     }
   }, [coordinates, map]);
+  return null;
+}
+
+function BackgroundMapLegend() {
+  const map = useMap();
+  useEffect(() => {
+    const LegendControl = L.Control.extend({
+      onAdd: () => {
+        const div = L.DomUtil.create('div', '');
+        div.style.background = 'rgba(255,255,255,0.9)';
+        div.style.border = '1px solid #e2e8f0';
+        div.style.borderRadius = '6px';
+        div.style.padding = '8px 10px';
+        div.style.fontSize = '11px';
+        div.style.minWidth = '100px';
+        let html = '<div style="font-weight:700;margin-bottom:4px;color:#0D3B4E">Legend</div>';
+        for (const cfg of Object.values(MARKER_CONFIG)) {
+          html += `<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">` +
+            `<span style="width:8px;height:8px;border-radius:50%;background:${cfg.bg};display:inline-block"></span>` +
+            `<span style="color:#1f2937">${cfg.label}</span></div>`;
+        }
+        div.innerHTML = html;
+        return div;
+      },
+    });
+    const legend = new LegendControl({ position: 'topright' });
+    legend.addTo(map);
+    return () => { legend.remove(); };
+  }, [map]);
   return null;
 }
 
@@ -306,14 +336,15 @@ export default function App() {
             attribution="&copy; OpenStreetMap contributors"
           />
           <SyncRouteViewport coordinates={coordinates} />
+          <BackgroundMapLegend />
           {routePolyline.length > 0 && (
             <Polyline positions={routePolyline} color="#0D3B4E" weight={5} opacity={0.9} />
           )}
-          {result?.markers?.map((marker) => {
+          {result?.markers?.map((marker, i) => {
             const cfg = MARKER_CONFIG[marker.type] ?? MARKER_CONFIG.start;
             return (
               <Marker
-                key={marker.id}
+                key={marker.id || i}
                 position={[marker.position.latitude, marker.position.longitude]}
                 icon={
                   new DivIcon({

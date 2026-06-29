@@ -43,25 +43,41 @@ class TripPlanningService:
             cycle_schedule=cycle_schedule,
         )
 
+        # Build a time lookup from logbook events (label → first event time)
+        event_times: dict[str, str] = {}
+        for day in logbook.get("logbook_days", []):
+            for ev in day.get("events", []):
+                label_key = ev.get("label", "").lower()
+                if label_key and label_key not in event_times:
+                    h = int(ev["start_hour"])
+                    m = int((ev["start_hour"] - h) * 60)
+                    event_times[label_key] = f"{h:02d}:{m:02d}"
+
         # 4. Build map markers
         markers = [
             {
+                "id": "start",
                 "lat": current_ll[0],
                 "lon": current_ll[1],
                 "type": "start",
                 "label": current_location,
+                "time": event_times.get("driving") or event_times.get(current_location.lower(), ""),
             },
             {
+                "id": "pickup",
                 "lat": pickup_ll[0],
                 "lon": pickup_ll[1],
                 "type": "pickup",
                 "label": pickup_location,
+                "time": event_times.get("pickup", ""),
             },
             {
+                "id": "dropoff",
                 "lat": dropoff_ll[0],
                 "lon": dropoff_ll[1],
                 "type": "dropoff",
                 "label": dropoff_location,
+                "time": event_times.get("dropoff", ""),
             },
         ]
 
@@ -153,25 +169,30 @@ class TripPlanningService:
                 marker_type = ev.get("marker_type", "")
                 if not marker_type:
                     continue
+                hours = int(ev["start_hour"] + day_offset_hours)
+                minutes = int((ev["start_hour"] + day_offset_hours - hours) * 60)
                 all_events.append({
                     "label": ev["label"],
                     "abs_start": ev["start_hour"] + day_offset_hours,
+                    "time": f"{hours % 24:02d}:{minutes:02d}",
                     "marker_type": marker_type,
                 })
 
         markers = []
         n = len(coordinates)
 
-        for ev in all_events:
+        for i, ev in enumerate(all_events):
             fraction = ev["abs_start"] / total_trip_hours
             fraction = max(0.0, min(1.0, fraction))
             idx = int(fraction * (n - 1))
             lon, lat = coordinates[idx]
             markers.append({
+                "id": f"stop-{i}",
                 "lat": lat,
                 "lon": lon,
                 "type": ev["marker_type"],
                 "label": ev["label"],
+                "time": ev["time"],
             })
 
         return markers
