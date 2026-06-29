@@ -1,9 +1,13 @@
-import { useRef, useEffect, useCallback } from 'react';
-import { Box, Stack, IconButton, Tabs, Tab, Tooltip } from '@mui/material';
-import { ChevronLeft, ChevronRight, Download } from '@mui/icons-material';
+import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { Box, Stack, IconButton, Tabs, Tab } from '@mui/material';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useEldColors } from '@/hooks/useEldColors';
 import { useLogbookNavigation } from '@/hooks/useLogbookNavigation';
 import type { LogbookDay, LogbookEvent, DutyStatus } from '@/types/trip';
+
+export interface LogbookCanvasHandle {
+  exportPdf: () => Promise<void>;
+}
 
 interface LogbookCanvasProps {
   day?: LogbookDay;
@@ -323,7 +327,10 @@ function renderCanvas(ctx: CanvasRenderingContext2D, day: LogbookDay, eldColors:
   drawFooter(ctx);
 }
 
-export function LogbookCanvas({ day, days, cycleSchedule, cycleMaxHours }: LogbookCanvasProps) {
+export const LogbookCanvas = forwardRef<LogbookCanvasHandle, LogbookCanvasProps>(function LogbookCanvas(
+  { day, days, cycleSchedule, cycleMaxHours },
+  ref,
+) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const eldColors = useEldColors();
   const totalDays = days?.length ?? 1;
@@ -340,6 +347,8 @@ export function LogbookCanvas({ day, days, cycleSchedule, cycleMaxHours }: Logbo
     pdf.addImage(imgData, 'PNG', 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     pdf.save(`logbook-day-${currentDay?.day ?? 0 + 1}.pdf`);
   }, [currentDay]);
+
+  useImperativeHandle(ref, () => ({ exportPdf }), [exportPdf]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -411,13 +420,6 @@ export function LogbookCanvas({ day, days, cycleSchedule, cycleMaxHours }: Logbo
         />
       </Box>
 
-      <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1, '@media print': { display: 'none' } }}>
-        <Tooltip title="Download PDF">
-          <IconButton size="small" onClick={exportPdf} aria-label="Download logbook as PDF">
-            <Download fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Stack>
     </Box>
   );
-}
+});

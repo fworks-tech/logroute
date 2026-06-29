@@ -22,6 +22,7 @@ import FlagIcon from '@mui/icons-material/Flag';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
+import { useTripStore } from '@/store/tripStore';
 import { tripSchema, TripFormValues } from '@/lib/schema';
 import { LoadingButton } from '@/components/atoms/LoadingButton';
 import { useGeocodeSearch } from '@/hooks/useGeocodeSearch';
@@ -63,6 +64,7 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
   const cycleValue = watch('cycleHoursUsed') || 0;
   const cycleSchedule = watch('cycleSchedule') || '70';
   const cycleMax = cycleSchedule === '60' ? 60 : 70;
+  const sessionCycleTotal = useTripStore((s) => s.sessionCycleTotal());
 
   const handleQuickFill = (fill: typeof QUICK_FILLS[number]) => {
     currentGeocode.setInputValue(fill.current);
@@ -156,6 +158,14 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
                 </FormControl>
               )} />
             </Box>
+            {sessionCycleTotal > 0 && (
+              <Box sx={{ mt: 0.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="caption" sx={{ color: '#64748b' }}>Session total (previous trips)</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 600, color: sessionCycleTotal >= cycleMax ? '#ef4444' : '#10B981' }}>
+                  {sessionCycleTotal.toFixed(1)} / {cycleMax} hrs
+                </Typography>
+              </Box>
+            )}
           </Box>
 
           {/* Optional Log Details */}

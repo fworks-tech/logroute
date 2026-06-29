@@ -1,9 +1,10 @@
-import { Box, Typography, Stack, Paper } from '@mui/material';
-import { LocalShipping, AccessTime, Speed, LocalGasStation, Hotel, Route } from '@mui/icons-material';
+import { useRef } from 'react';
+import { Box, Typography, Stack, Paper, Button } from '@mui/material';
+import { LocalShipping, AccessTime, Speed, LocalGasStation, Hotel, Route, Download } from '@mui/icons-material';
 import { StatCard } from '@/components/atoms/StatCard';
 import { SectionPaper } from '@/components/atoms/SectionPaper';
 import { RouteMap } from '@/components/organisms/RouteMap';
-import { LogbookCanvas } from '@/components/organisms/LogbookCanvas';
+import { LogbookCanvas, type LogbookCanvasHandle } from '@/components/organisms/LogbookCanvas';
 import { LogbookDayDetail } from '@/components/molecules/LogbookDayDetail';
 import type { PlanRouteResponse } from '@/types/trip';
 const DUTY_COLORS: Record<string, string> = {
@@ -20,6 +21,7 @@ export interface TripResultsProps {
 export function TripResults({ result }: TripResultsProps) {
 
   const { trip_summary: summary, logbook_days: days, route_coordinates: coords, markers } = result;
+  const logbookRef = useRef<LogbookCanvasHandle>(null);
 
   const stats = [
     { label: 'Total Distance', value: `${(summary?.total_distance_miles ?? 0).toLocaleString()} mi`, icon: <LocalShipping />, color: '#f59e0b' },
@@ -40,6 +42,18 @@ export function TripResults({ result }: TripResultsProps) {
 
   return (
     <Box>
+      <Button
+        variant="contained"
+        color="secondary"
+        fullWidth
+        size="large"
+        startIcon={<Download />}
+        onClick={() => logbookRef.current?.exportPdf()}
+        sx={{ mb: 2, py: 1.2, fontWeight: 700 }}
+      >
+        Download Logbook PDF
+      </Button>
+
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0D3B4E' }}>Trip Summary</Typography>
@@ -74,7 +88,7 @@ export function TripResults({ result }: TripResultsProps) {
       </SectionPaper>
 
       <SectionPaper title="ELD Logbook" subtitle={`${days.length} sheet${days.length > 1 ? 's' : ''}`}>
-        <LogbookCanvas days={days} cycleSchedule={result.cycle_schedule} cycleMaxHours={result.cycle_max_hours} />
+        <LogbookCanvas ref={logbookRef} days={days} cycleSchedule={result.cycle_schedule} cycleMaxHours={result.cycle_max_hours} />
         <Box sx={{ mt: 2 }}>
           <LogbookDayDetail days={days} />
         </Box>

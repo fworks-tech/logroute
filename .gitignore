@@ -48,3 +48,5 @@ postgres_data/
 # Misc
 *.tmp
 *.bak
+
+.vercel

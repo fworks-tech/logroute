@@ -13,7 +13,10 @@ interface SessionPanelProps {
 }
 
 export function SessionPanel({ trips, onRemove, onClear }: SessionPanelProps) {
-  const totalHours = trips.reduce((sum, t) => sum + t.cycleHoursUsed + t.drivingHours, 0);
+  const last = trips[trips.length - 1];
+  const totalHours = trips.length > 0
+    ? last.cycleHoursUsed + trips.reduce((sum, t) => sum + t.drivingHours, 0)
+    : 0;
   const isOverLimit = totalHours > 70;
 
   return (
