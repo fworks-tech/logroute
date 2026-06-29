@@ -27,7 +27,7 @@ Backend on `:8000`, frontend on `:3000` (proxies `/api` to backend).
 |-------|---------|-------------|
 | Frontend | `npm run dev` | Vite dev server (`:3000`) |
 | Frontend | `npm run build` | `tsc && vite build` |
-| Frontend | `npm run lint` | `tsc --noEmit` (no ESLint configured) |
+| Frontend | `npm run lint` | `tsc --noEmit && eslint src/` |
 | Frontend | `npm run test` | `vitest` (watch mode) |
 | Frontend | `npm run test:unit` | `vitest --run` (single run) |
 | Frontend | `npm run test:e2e` | `playwright test` |
@@ -55,7 +55,8 @@ Backend on `:8000`, frontend on `:3000` (proxies `/api` to backend).
 ## Conventions & gotchas
 
 - **`npm install --legacy-peer-deps`** is required (React 19 + MUI 6 peer dep conflicts).
-- **No ESLint.** Linting is `tsc --noEmit` only. `noUnusedLocals` and `noUnusedParameters` are `true` — unused vars fail lint.
+- **Linting** is `tsc --noEmit` + ESLint (`@typescript-eslint` + `tsdoc/syntax`). `noUnusedLocals` and `noUnusedParameters` are `true` — unused vars fail lint.
+- **Documentation**: Frontend uses TSDoc (`/** ... */`) on all exports; backend uses Google-style docstrings. Both are enforced by linter rules (`tsdoc/syntax` for TS, review for Python).
 - **`@/`** path alias in frontend maps to `frontend/src/`.
 - **API client** under `frontend/src/lib/api-client/` is auto-generated (`npm run generate:api-client`). Manual changes there will be overwritten.
 - **Zustand store** at `frontend/src/store/tripStore.ts` manages trip results, loading state, errors, and session history.
