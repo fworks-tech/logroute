@@ -5,6 +5,7 @@ import sys
 
 
 def main():
+    """Run administrative tasks for the LogRoute backend."""
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "logroute.settings")
     try:

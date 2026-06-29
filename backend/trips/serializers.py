@@ -11,6 +11,8 @@ CYCLE_SCHEDULE_CHOICES = ["60", "70"]
 
 
 class TripInputSerializer(serializers.Serializer):
+    """Validate and deserialize the incoming trip planning request body."""
+
     current_location = serializers.CharField(min_length=2, max_length=500)
     pickup_location = serializers.CharField(min_length=2, max_length=500)
     dropoff_location = serializers.CharField(min_length=2, max_length=500)
@@ -23,6 +25,8 @@ class TripInputSerializer(serializers.Serializer):
 
 
 class MarkerSerializer(serializers.Serializer):
+    """Serialize a map marker with coordinates, type, and label."""
+
     lat = serializers.FloatField()
     lon = serializers.FloatField()
     type = serializers.CharField(max_length=50)
@@ -30,6 +34,8 @@ class MarkerSerializer(serializers.Serializer):
 
 
 class LogbookEventSerializer(serializers.Serializer):
+    """Serialize a single ELD logbook event with duty status and time range."""
+
     status = serializers.CharField(max_length=50)
     start_time = serializers.CharField(max_length=5)
     end_time = serializers.CharField(max_length=5)
@@ -39,6 +45,8 @@ class LogbookEventSerializer(serializers.Serializer):
 
 
 class LogbookDaySerializer(serializers.Serializer):
+    """Serialize a single logbook day with events, row totals, and cycle data."""
+
     day = serializers.IntegerField()
     date_offset = serializers.IntegerField()
     date = serializers.CharField(max_length=10)
@@ -54,6 +62,8 @@ class LogbookDaySerializer(serializers.Serializer):
 
 
 class TripSummarySerializer(serializers.Serializer):
+    """Serialize the trip summary with distances, hours, and stop counts."""
+
     total_distance_miles = serializers.FloatField()
     total_trip_hours = serializers.FloatField()
     total_driving_hours = serializers.FloatField()
@@ -68,6 +78,8 @@ class TripSummarySerializer(serializers.Serializer):
 
 
 class TripOutputSerializer(serializers.Serializer):
+    """Serialize the full trip planning output returned to the frontend."""
+
     route_coordinates = serializers.ListField(child=serializers.ListField(child=serializers.FloatField()))
     markers = MarkerSerializer(many=True)
     logbook_days = LogbookDaySerializer(many=True)
@@ -81,10 +93,14 @@ class TripOutputSerializer(serializers.Serializer):
 
 
 class HealthCheckSerializer(serializers.Serializer):
+    """Serialize a simple health-check response."""
+
     status = serializers.CharField()
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Extend SimpleJWT token with email and username claims."""
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -94,6 +110,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Validate and create a new user with username, email, and password."""
+
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True)
 
@@ -111,6 +129,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class TripSerializer(serializers.ModelSerializer):
+    """Full trip serialization with all fields; used for detail and update views."""
     class Meta:
         model = Trip
         fields = [
@@ -127,6 +146,7 @@ class TripSerializer(serializers.ModelSerializer):
 
 
 class TripListSerializer(serializers.ModelSerializer):
+    """Lightweight trip serializer for list views, excluding heavy JSON fields."""
     class Meta:
         model = Trip
         fields = [
@@ -137,6 +157,7 @@ class TripListSerializer(serializers.ModelSerializer):
 
 
 class TripCreateSerializer(serializers.Serializer):
+    """Validate input for creating a new trip from the frontend form."""
     current_location = serializers.CharField(min_length=2, max_length=500)
     pickup_location = serializers.CharField(min_length=2, max_length=500)
     dropoff_location = serializers.CharField(min_length=2, max_length=500)

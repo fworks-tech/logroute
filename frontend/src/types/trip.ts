@@ -1,8 +1,10 @@
+/** A geographic coordinate pair (latitude/longitude). */
 export interface RouteCoordinate {
   latitude: number;
   longitude: number;
 }
 
+/** A point-of-interest marker along the route (start, pickup, dropoff, fuel, rest). */
 export interface Marker {
   id: string;
   type: "start" | "pickup" | "dropoff" | "fuel" | "rest";
@@ -11,8 +13,10 @@ export interface Marker {
   time?: string;
 }
 
+/** FMCSA duty status values for ELD logbook events. */
 export type DutyStatus = "OFF_DUTY" | "SLEEPER_BERTH" | "DRIVING" | "ON_DUTY_NOT_DRIVING";
 
+/** A single logbook event with a duty status, time range, and optional location. */
 export interface LogbookEvent {
   status: DutyStatus;
   start_time: string;
@@ -22,6 +26,7 @@ export interface LogbookEvent {
   location?: string;
 }
 
+/** Aggregate hours for each duty status in a single logbook day. */
 export interface RowTotals {
   off_duty_hours: number;
   sleeper_berth_hours: number;
@@ -29,6 +34,7 @@ export interface RowTotals {
   on_duty_not_driving_hours: number;
 }
 
+/** A single day in the ELD logbook with events, miles, and cumulative cycle data. */
 export interface LogbookDay {
   day: number;
   date_offset: number;
@@ -44,6 +50,7 @@ export interface LogbookDay {
   events: LogbookEvent[];
 }
 
+/** High-level summary of the planned trip: distance, hours, stops. */
 export interface TripSummary {
   total_distance_miles: number;
   total_trip_hours: number;
@@ -54,6 +61,7 @@ export interface TripSummary {
   leg_2_miles: number;
 }
 
+/** Optional metadata fields for the ELD logbook. */
 export interface ELDMetadata {
   trip_date?: string;
   tractor_number?: string;
@@ -61,6 +69,7 @@ export interface ELDMetadata {
   shipper_name?: string;
 }
 
+/** Full response from the plan-route API: coordinates, markers, logbook, summary. */
 export interface PlanRouteResponse extends ELDMetadata {
   route_coordinates: RouteCoordinate[];
   markers: Marker[];
@@ -73,6 +82,7 @@ export interface PlanRouteResponse extends ELDMetadata {
   cycle_max_hours?: number;
 }
 
+/** Categorised error codes returned by the API. */
 export type ApiErrorCode =
   | "timeout"
   | "upstream_error"
@@ -81,6 +91,7 @@ export type ApiErrorCode =
   | "server_error"
   | "unknown_error";
 
+/** Structured error response with code, message, and retryability. */
 export interface ApiErrorResponse {
   code: ApiErrorCode;
   message: string;

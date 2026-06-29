@@ -12,6 +12,7 @@ interface SessionPanelProps {
   onClear: () => void;
 }
 
+/** Popover panel listing session trip history with cumulative cycle hours and clear action. */
 export function SessionPanel({ trips, onRemove, onClear }: SessionPanelProps) {
   const last = trips[trips.length - 1];
   const totalHours = trips.length > 0

@@ -1,5 +1,6 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
+/** Augments MUI palette with LogRoute brand and ELD duty-status colours. */
 declare module '@mui/material/styles' {
   interface Palette {
     brand: {

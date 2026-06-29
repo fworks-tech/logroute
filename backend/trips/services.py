@@ -7,6 +7,8 @@ logger = logging.getLogger("logroute.services")
 
 
 class TripPlanningService:
+    """Orchestrates the full trip-planning pipeline: geocode, route, HOS simulation, markers."""
+
     @staticmethod
     def plan_route(
         current_location: str,
@@ -16,6 +18,20 @@ class TripPlanningService:
         start_date=None,
         cycle_schedule: str = "70",
     ) -> dict:
+        """Geocode three locations, fetch the OSRM route, run HOS simulation, and build markers.
+
+        Args:
+            current_location: Starting location name.
+            pickup_location: Pickup location name.
+            dropoff_location: Dropoff location name.
+            cycle_hours_used: Hours already used in the current cycle.
+            start_date: Optional trip start date; defaults to today.
+            cycle_schedule: '60' for 60-hour/7-day or '70' for 70-hour/8-day.
+
+        Returns:
+            A dictionary containing route_coordinates, markers, logbook_days, trip_summary,
+            and locations metadata.
+        """
         # 1. Geocode all three locations
         current_ll = geocode(current_location)
         pickup_ll = geocode(pickup_location)
@@ -158,6 +174,15 @@ class TripPlanningService:
         coordinates: list,
         logbook: dict,
     ) -> list:
+        """Derive rest/fuel stop markers from raw logbook events.
+
+        Args:
+            coordinates: Route geometry as list of [lon, lat] pairs.
+            logbook: Raw HOS simulation output with logbook_days and events.
+
+        Returns:
+            A list of marker dicts with id, lat, lon, type, label, and time.
+        """
         total_trip_hours = logbook.get("total_trip_hours", 0)
         if total_trip_hours <= 0 or not coordinates:
             return []

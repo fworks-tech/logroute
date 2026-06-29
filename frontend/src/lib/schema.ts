@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+/** Zod schema for the trip planning form with location, cycle, and optional log details. */
 export const tripSchema = z.object({
   currentLocation: z.string().min(2, "Location required").max(500),
   pickupLocation: z.string().min(2, "Location required").max(500),
@@ -12,4 +13,5 @@ export const tripSchema = z.object({
   shipperName: z.string().max(255).optional().default(""),
 });
 
+/** Inferred type for the trip planning form values. */
 export type TripFormValues = z.infer<typeof tripSchema>;

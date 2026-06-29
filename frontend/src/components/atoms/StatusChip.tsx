@@ -10,10 +10,12 @@ const STATUS_LABELS: Record<DutyStatus, string> = {
   ON_DUTY_NOT_DRIVING: 'On Duty (Not Driving)',
 };
 
+/** Props for the StatusChip component. */
 export interface StatusChipProps {
   status: DutyStatus;
 }
 
+/** Renders a coloured chip for a given ELD duty status. */
 export const StatusChip: React.FC<StatusChipProps> = ({ status }) => {
   const eldColors = useEldColors();
   const label = STATUS_LABELS[status];

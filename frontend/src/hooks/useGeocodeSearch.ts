@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 
+/** Result from the geocoding API with display name and coordinates. */
 export interface GeocodeResult {
   display_name: string;
   lat: number;
@@ -8,6 +9,7 @@ export interface GeocodeResult {
   osm_id: number;
 }
 
+/** Return type for the useGeocodeSearch hook. */
 export interface UseGeocodeSearchReturn {
   inputValue: string;
   setInputValue: (value: string) => void;
@@ -21,6 +23,7 @@ const GEOCODE_URL = '/api/geocode/';
 const SEARCH_DEBOUNCE_MS = 300;
 const MIN_QUERY_LENGTH = 2;
 
+/** Hook that provides debounced geocoding search with suggestions, loading, and error state. */
 export function useGeocodeSearch(): UseGeocodeSearchReturn {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);

@@ -1,5 +1,7 @@
+/** Supported log severity levels. */
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
+/** A structured log entry with timestamp, level, correlation ID, and optional error/data. */
 export interface LogEntry {
   timestamp: string;
   level: LogLevel;
@@ -9,10 +11,12 @@ export interface LogEntry {
   error?: { message: string; stack?: string };
 }
 
+/** Generates a unique correlation ID from timestamp and random characters. */
 export function generateCorrelationId(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 }
 
+/** Structured logger with correlation tracking, environment-aware output, and PII-safe formatting. */
 export class Logger {
   private correlationId: string;
   private isDevelopment: boolean;
@@ -55,4 +59,5 @@ export class Logger {
   }
 }
 
+/** Default singleton logger instance. */
 export const logger = new Logger();

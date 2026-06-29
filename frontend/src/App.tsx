@@ -36,6 +36,7 @@ const DESKTOP_DRAWER_VERTICAL_SPACE_PX = 32;
 
 let autoSubmittedUrl = '';
 
+/** Encodes trip form values into URL search parameters for sharing/bookmarking. */
 function encodeFormToParams(data: TripFormValues): URLSearchParams {
   const p = new URLSearchParams();
   p.set('current', data.currentLocation);
@@ -50,6 +51,7 @@ function encodeFormToParams(data: TripFormValues): URLSearchParams {
   return p;
 }
 
+/** Decodes URL search parameters back into trip form values. */
 function decodeParamsToForm(sp: URLSearchParams): TripFormValues | null {
   const current = sp.get('current');
   const pickup = sp.get('pickup');
@@ -68,6 +70,7 @@ function decodeParamsToForm(sp: URLSearchParams): TripFormValues | null {
   };
 }
 
+/** Adjusts the map viewport to fit all route coordinates. */
 function SyncRouteViewport({ coordinates }: { coordinates: RouteCoordinate[] }) {
   const map = useMap();
   useEffect(() => {
@@ -80,6 +83,7 @@ function SyncRouteViewport({ coordinates }: { coordinates: RouteCoordinate[] }) 
   return null;
 }
 
+/** Renders a Leaflet legend control on the background map showing marker types. */
 function BackgroundMapLegend() {
   const map = useMap();
   useEffect(() => {
@@ -109,6 +113,7 @@ function BackgroundMapLegend() {
   return null;
 }
 
+/** Root application component managing the sidebar, map, and trip planning workflow. */
 export default function App() {
   const { submit, isLoading, error, reset, result } = useTripPlanner();
   const { sessionTrips, addSessionTrip, removeSessionTrip, clearSessionTrips } = useTripStore();

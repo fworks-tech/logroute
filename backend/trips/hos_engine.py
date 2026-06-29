@@ -147,6 +147,7 @@ def simulate_trip(
         location: str = "",
         marker_type: str = "",
     ) -> None:
+        """Append a logbook event and advance the simulation clock."""
         nonlocal current_time
         if duration <= 0:
             return
@@ -187,7 +188,7 @@ def simulate_trip(
         return max(0.0, BREAK_DRIVE_THRESHOLD - state["drive_since_break"])
 
     def remaining_cycle() -> float:
-        """Hours left in the cycle (60/7 or 70/8)."""
+        """Hours left in the current cycle (60/7 or 70/8)."""
         return max(0.0, max_cycle_hours - state["cycle_hours"])
 
     def do_rest(label: str = "Rest (10-hr Reset)") -> None:

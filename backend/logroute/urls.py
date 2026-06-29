@@ -5,6 +5,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
 def health_check(request):
+    """Return a simple JSON health-check response."""
     return JsonResponse({"status": "ok"})
 
 

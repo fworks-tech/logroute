@@ -8,8 +8,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StatusChip } from '@/components/atoms/StatusChip';
 import type { LogbookDay } from '@/types/trip';
 
+/** Props for the LogbookDayDetail component. */
 export interface LogbookDayDetailProps { days: LogbookDay[]; }
 
+/** Renders an accordion list of logbook days with expandable event tables. */
 export const LogbookDayDetail: React.FC<LogbookDayDetailProps> = ({ days }) => {
   const [expanded, setExpanded] = useState<number | false>(false);
   const toggle = (day: number) => (_: React.SyntheticEvent, isExpanded: boolean) => { setExpanded(isExpanded ? day : false); };

@@ -67,6 +67,16 @@ TEMPLATES = [
 
 
 def _build_database_config(database_url: str) -> dict:
+    """Parse a DATABASE_URL and return a Django database configuration dict.
+
+    Supports PostgreSQL ('postgres://' or 'postgresql://') and falls back to SQLite.
+
+    Args:
+        database_url: The database connection URL.
+
+    Returns:
+        A dictionary that can be used as a Django DATABASES entry.
+    """
     parsed = urlparse(database_url)
     if parsed.scheme in {"postgres", "postgresql"}:
         return {

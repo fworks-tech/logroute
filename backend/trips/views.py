@@ -21,6 +21,8 @@ logger = logging.getLogger("logroute.views")
 
 
 class HealthCheckView(APIView):
+    """Simple health-check endpoint returning {'status': 'ok'}."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -31,6 +33,8 @@ class HealthCheckView(APIView):
 
 
 class PlanRouteView(APIView):
+    """Accept trip input, run the planning pipeline, and return route + logbook data."""
+
     permission_classes = [AllowAny]
     throttle_classes = [PlanRouteThrottle]
 
@@ -70,6 +74,8 @@ class PlanRouteView(APIView):
 
 
 class GeocodeSearchView(APIView):
+    """Return autocomplete suggestions for a partial location query."""
+
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -86,6 +92,8 @@ class GeocodeSearchView(APIView):
 
 
 class TokenObtainView(APIView):
+    """Issue JWT access and refresh tokens for a registered user."""
+
     permission_classes = [AllowAny]
     throttle_classes = [AuthThrottle]
 
@@ -97,6 +105,8 @@ class TokenObtainView(APIView):
 
 
 class UserRegistrationView(APIView):
+    """Register a new user account with username, email, and password."""
+
     permission_classes = [AllowAny]
     throttle_classes = [AuthThrottle]
 

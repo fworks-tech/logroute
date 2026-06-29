@@ -3,6 +3,8 @@ from django.db import models
 
 
 class Trip(models.Model):
+    """Persisted trip plan with locations, cycle data, route geometry, and ELD logbook."""
+
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"
         PLANNED = "planned", "Planned"
@@ -34,4 +36,5 @@ class Trip(models.Model):
         verbose_name_plural = "trips"
 
     def __str__(self):
+        """Return a human-readable string identifying the trip by origin and destination."""
         return f"Trip {self.pk} - {self.pickup_location} to {self.dropoff_location}"

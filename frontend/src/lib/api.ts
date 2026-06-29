@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import type { TripInput } from './api-client/models/TripInput';
 import { Logger } from './logger';
 import { redactPII } from './redaction';
@@ -6,6 +7,7 @@ import type { PlanRouteResponse } from '@/types/trip';
 
 const logger = new Logger('api');
 
+/** Formats an Axios or generic error into a human-readable string with PII redacted. */
 export function formatApiError(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const status = error.response?.status;
@@ -20,11 +22,13 @@ export function formatApiError(error: unknown): string {
   return String(error);
 }
 
+/** Pre-configured Axios instance pointing at the `/api` base URL. */
 export const apiClient = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
+/** Attaches request/response interceptors to log API calls and inject correlation IDs. */
 export function setupApiLogging(): void {
   apiClient.interceptors.request.use(
     (config) => {
@@ -53,6 +57,7 @@ export function setupApiLogging(): void {
   );
 }
 
+/** Adapts the raw TripOutput shape from the API into the frontend PlanRouteResponse type. */
 export function adaptTripOutputToResponse(data: Record<string, unknown>): PlanRouteResponse {
   const rc = data.route_coordinates as Array<[number, number]> | undefined;
   const rawMarkers = (data.markers || []) as Array<Record<string, unknown>>;
@@ -76,6 +81,7 @@ export function adaptTripOutputToResponse(data: Record<string, unknown>): PlanRo
   };
 }
 
+/** Calls the plan-route API endpoint and returns a typed PlanRouteResponse. */
 export async function planRoute(input: TripInput): Promise<PlanRouteResponse> {
   logger.info('Planning route', {
     current_location: redactPII(input.current_location),

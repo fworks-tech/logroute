@@ -5,6 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { MARKER_CONFIG } from '@/lib/mapConfig';
 import type { Marker as RouteMarker, RouteCoordinate } from '@/types/trip';
 
+/** Props for the RouteMap component. */
 export interface RouteMapProps {
   coords: RouteCoordinate[];
   markers: RouteMarker[];
@@ -80,6 +81,7 @@ function MapLegend() {
   return null;
 }
 
+/** Interactive Leaflet map displaying the route polyline and markers with a legend. */
 export function RouteMap({ coords, markers }: RouteMapProps) {
   const routePositions: [number, number][] = useMemo(
     () => coords.map((c) => [c.latitude, c.longitude]),

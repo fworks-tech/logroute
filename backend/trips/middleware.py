@@ -11,6 +11,8 @@ request_id_var: ContextVar[str] = ContextVar("request_id", default="")
 
 
 class RequestLoggingMiddleware:
+    """Middleware that logs every request with a unique ID, method, path, status, and duration."""
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -37,6 +39,8 @@ class RequestLoggingMiddleware:
 
 
 class ErrorHandlingMiddleware:
+    """Middleware that catches unhandled exceptions and returns a JSON 500 response."""
+
     def __init__(self, get_response):
         self.get_response = get_response
 

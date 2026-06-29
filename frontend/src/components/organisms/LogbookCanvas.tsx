@@ -5,10 +5,12 @@ import { useEldColors } from '@/hooks/useEldColors';
 import { useLogbookNavigation } from '@/hooks/useLogbookNavigation';
 import type { LogbookDay, LogbookEvent, DutyStatus } from '@/types/trip';
 
+/** Ref handle exposed by LogbookCanvas for exporting the logbook sheet as PDF. */
 export interface LogbookCanvasHandle {
   exportPdf: () => Promise<void>;
 }
 
+/** Props for the LogbookCanvas component. */
 interface LogbookCanvasProps {
   day?: LogbookDay;
   days?: LogbookDay[];
@@ -332,6 +334,7 @@ function renderCanvas(ctx: CanvasRenderingContext2D, day: LogbookDay, eldColors:
   drawFooter(ctx);
 }
 
+/** Canvas rendering of an FMCSA ELD logbook sheet with grid, events, recap, and remarks. */
 export const LogbookCanvas = forwardRef<LogbookCanvasHandle, LogbookCanvasProps>(function LogbookCanvas(
   { day, days, cycleSchedule, cycleMaxHours, tractorNumber, trailerNumber, shipperName },
   ref,

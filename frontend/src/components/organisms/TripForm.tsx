@@ -33,6 +33,7 @@ const QUICK_FILLS = [
   { name: 'NY → Miami', current: 'New York, NY', pickup: 'New York, NY', dropoff: 'Miami, FL', cycle: 20 },
 ];
 
+/** Props for the TripForm component. */
 export interface TripFormProps {
   onSubmit: (data: TripFormValues) => void;
   isLoading: boolean;
@@ -41,6 +42,7 @@ export interface TripFormProps {
   initialValues?: TripFormValues;
 }
 
+/** Trip planning form with geocoding autocomplete, cycle-hours input, and optional log details. */
 export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) {
   const [expandMetadata, setExpandMetadata] = useState(false);
   const currentGeocode = useGeocodeSearch();

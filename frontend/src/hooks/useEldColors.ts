@@ -1,5 +1,6 @@
 import type { DutyStatus } from '@/types/trip';
 
+/** Canvas and chip colour configuration for a single duty status. */
 interface EldColorEntry {
   canvas: string;
   chip: { bgcolor: string; color: string };
@@ -14,6 +15,7 @@ const DEFAULT_COLORS: EldColors = {
   ON_DUTY_NOT_DRIVING: { canvas: '#F59E0B', chip: { bgcolor: 'rgba(245,158,11,0.2)', color: '#F59E0B' } },
 };
 
+/** Hook returning the colour palette for ELD duty status display. */
 export function useEldColors(): EldColors {
   return DEFAULT_COLORS;
 }

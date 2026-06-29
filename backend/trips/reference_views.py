@@ -31,6 +31,8 @@ class HosSummarySerializer(serializers.Serializer):
 
 
 class HosSummaryView(APIView):
+    """Return the FMCSA HOS guide overview and disclaimer."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -46,6 +48,8 @@ class ComplianceRequirementsSerializer(serializers.Serializer):
 
 
 class ComplianceRequirementsView(APIView):
+    """Return the conditions under which FMCSA HOS rules apply."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -61,6 +65,8 @@ class CommerceDefinitionsSerializer(serializers.Serializer):
 
 
 class CommerceDefinitionsView(APIView):
+    """Return interstate and intrastate commerce definitions."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -78,6 +84,8 @@ class DutyStatusDefinitionsSerializer(serializers.Serializer):
 
 
 class DutyStatusDefinitionsView(APIView):
+    """Return the definitions for on-duty, off-duty, personal conveyance, and yard moves."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -97,6 +105,8 @@ class HosLimitsSerializer(serializers.Serializer):
 
 
 class HosLimitsView(APIView):
+    """Return the core FMCSA HOS limits (14-hr window, 11-hr drive, break, weekly cycle, restart)."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -116,6 +126,8 @@ class HosExceptionSerializer(serializers.Serializer):
 
 
 class HosExceptionsView(APIView):
+    """Return all HOS exceptions, optionally filtered by query parameter."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -130,6 +142,8 @@ class HosExceptionsView(APIView):
 
 
 class HosExceptionDetailView(APIView):
+    """Return a single HOS exception by its ID."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -153,6 +167,8 @@ class LoggingRequirementsSerializer(serializers.Serializer):
 
 
 class LoggingRequirementsView(APIView):
+    """Return ELD logging requirements and paper-log allowances."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -171,6 +187,8 @@ class ResourceLinksSerializer(serializers.Serializer):
 
 
 class ResourceLinksView(APIView):
+    """Return helpful FMCSA resource links and contact information."""
+
     permission_classes = [AllowAny]
     authentication_classes = []
 

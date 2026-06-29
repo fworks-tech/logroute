@@ -3,6 +3,7 @@ import type { PlanRouteResponse, ApiErrorResponse } from "@/types/trip";
 
 const STORAGE_KEY = "logroute-session-trips";
 
+/** A previously planned trip stored in the current session. */
 export interface SessionTrip {
   id: string;
   label: string;
@@ -12,6 +13,7 @@ export interface SessionTrip {
   plannedAt: string;
 }
 
+/** Global state for trip planning results, loading, errors, and session history. */
 interface TripStore {
   result: PlanRouteResponse | null;
   isLoading: boolean;
@@ -44,6 +46,7 @@ function saveSessionTrips(trips: SessionTrip[]): void {
   } catch { /* quota exceeded, ignore */ }
 }
 
+/** Zustand store managing trip results, loading state, errors, and session trips persisted to localStorage. */
 export const useTripStore = create<TripStore>()((set, get) => ({
   result: null,
   isLoading: false,

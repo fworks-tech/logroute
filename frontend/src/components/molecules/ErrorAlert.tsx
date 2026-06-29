@@ -2,12 +2,14 @@ import React from 'react';
 import { Alert, AlertTitle, Button, Box, Stack } from '@mui/material';
 import type { ApiErrorResponse } from '@/types/trip';
 
+/** Props for the ErrorAlert component. */
 export interface ErrorAlertProps {
   error: ApiErrorResponse | null;
   onRetry?: () => void;
   onDismiss?: () => void;
 }
 
+/** Displays an API error with optional retry and dismiss actions. */
 export const ErrorAlert: React.FC<ErrorAlertProps> = ({ error, onRetry, onDismiss }) => {
   if (!error) return null;
   const severity = error.code === 'validation_error' ? 'warning' : 'error';

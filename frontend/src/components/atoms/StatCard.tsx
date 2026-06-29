@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
+/** Props for the StatCard component. */
 export interface StatCardProps {
   icon: React.ReactNode;
   label: string;
@@ -15,6 +16,7 @@ export interface StatCardProps {
 
 const MotionCard = motion.create(Card);
 
+/** Animated card displaying a single statistic with icon, label, and value. */
 export const StatCard: React.FC<StatCardProps> = ({ icon, label, value, unit, delay = 0 }) => (
   <MotionCard
     initial={{ opacity: 0, y: 20 }}

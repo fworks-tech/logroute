@@ -1,3 +1,4 @@
+/** Redacts personally identifiable information (locations, coordinates, keys, phone, email) from a string. */
 export function redactPII(text: string | unknown): string {
   if (!text || typeof text !== 'string') return String(text);
   let redacted = text;
@@ -11,6 +12,7 @@ export function redactPII(text: string | unknown): string {
 
 const DEFAULT_SENSITIVE_FIELDS = ['location', 'address', 'city', 'state', 'zipcode', 'zip', 'latitude', 'lat', 'longitude', 'lon', 'coordinates', 'phone', 'email', 'apikey', 'api_key', 'token', 'secret', 'password'];
 
+/** Recursively redacts sensitive fields and PII from an object tree. */
 export function redactObject(obj: unknown, sensitiveFields: string[] = DEFAULT_SENSITIVE_FIELDS): unknown {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'string') return redactPII(obj);
@@ -32,6 +34,7 @@ export function redactObject(obj: unknown, sensitiveFields: string[] = DEFAULT_S
   return redacted;
 }
 
+/** Redacts PII from an Error object, string, or unknown value and returns a safe string representation. */
 export function redactError(error: Error | string | unknown): string {
   if (error instanceof Error) {
     const message = redactPII(error.message);

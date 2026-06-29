@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 
+/** Return type for the useLogbookNavigation hook. */
 export interface UseLogbookNavigationReturn {
   activeDay: number;
   setActiveDay: (day: number) => void;
@@ -9,6 +10,7 @@ export interface UseLogbookNavigationReturn {
   hasPrev: boolean;
 }
 
+/** Hook for navigating between logbook days with next/prev boundaries. */
 export function useLogbookNavigation(totalDays: number): UseLogbookNavigationReturn {
   const [activeDay, setActiveDayState] = useState(0);
 

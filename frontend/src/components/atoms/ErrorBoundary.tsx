@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 interface Props { children: ReactNode; }
 interface State { hasError: boolean; error: Error | null; }
 
+/** React error boundary that catches rendering errors and displays a retry UI. */
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);

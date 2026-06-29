@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/atoms/ErrorBoundary';
 import '@/index.css';
 import { setupApiLogging } from '@/lib/api';
 
+/** React Query client configured with 60s stale time and single retry. */
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: 60_000, retry: 1 },

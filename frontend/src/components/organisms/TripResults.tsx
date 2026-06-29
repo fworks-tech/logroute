@@ -14,10 +14,12 @@ const DUTY_COLORS: Record<string, string> = {
   ON_DUTY_NOT_DRIVING: '#F97316',
 };
 
+/** Props for the TripResults component. */
 export interface TripResultsProps {
   result: PlanRouteResponse;
 }
 
+/** Displays the complete trip plan: summary stats, route map, daily breakdown, and ELD logbook. */
 export function TripResults({ result }: TripResultsProps) {
 
   const { trip_summary: summary, logbook_days: days, route_coordinates: coords, markers } = result;

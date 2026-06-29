@@ -6,6 +6,7 @@ import type { TripFormValues } from '@/lib/schema';
 import type { TripInput } from '@/lib/api-client/models/TripInput';
 import type { PlanRouteResponse, ApiErrorResponse } from '@/types/trip';
 
+/** Return type for the useTripPlanner hook. */
 export interface UseTripPlannerReturn {
   submit: (data: TripFormValues) => void;
   isLoading: boolean;
@@ -24,6 +25,7 @@ function toTripInput(data: TripFormValues): TripInput {
   };
 }
 
+/** Hook that submits a trip plan via React Query mutation and syncs result/error state with the global store. */
 export function useTripPlanner(): UseTripPlannerReturn {
   const { setResult, setLoading, setError, clearResult, result } = useTripStore();
 

@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 
+/** Props for the SectionPaper component. */
 export interface SectionPaperProps {
   title: string;
   subtitle?: string;
@@ -11,6 +12,7 @@ export interface SectionPaperProps {
   children: React.ReactNode;
 }
 
+/** Wraps content in a titled, ARIA-labelled paper section with optional icon and subtitle. */
 export const SectionPaper: React.FC<SectionPaperProps> = ({ title, subtitle, icon, children }) => {
   const headingId = `section-${title.toLowerCase().replace(/\s+/g, '-')}`;
 
