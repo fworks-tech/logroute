@@ -38,6 +38,7 @@ coverage/
 playwright-report/
 test-results/
 e2e/screenshots/
+frontend/e2e/screenshots/
 
 # Logs
 *.log
