@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Build output
+frontend/dist/
+frontend/build/
+backend/staticfiles/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.sqlite3
+
+# Testing
+htmlcov/
+.coverage
+coverage/
+.pytest_cache/
+playwright-report/
+test-results/
+e2e/screenshots/
+
+# Logs
+*.log
+
+# Docker
+postgres_data/
+
+# Misc
+*.tmp
+*.bak

@@ -1,0 +1,484 @@
+openapi: 3.1.0
+info:
+  title: FMCSA Hours of Service Reference API
+  version: "2022-04-28"
+  description: >
+    Structured reference data extracted from the Interstate Truck Driver's Guide
+    to Hours of Service for Property Carriers (April 2022).
+  contact:
+    name: FMCSA Information Line
+    email: hoursofservice@dot.gov
+servers:
+  - url: https://www.fmcsa.dot.gov
+    description: FMCSA official site
+
+tags:
+  - name: compliance
+    description: Applicability of HOS regulations
+  - name: commerce
+    description: Interstate and intrastate commerce definitions
+  - name: duty-status
+    description: On-duty and off-duty definitions
+  - name: limits
+    description: Core HOS time limits
+  - name: exceptions
+    description: HOS exceptions and special rules
+  - name: logging
+    description: ELD and RODS requirements
+  - name: resources
+    description: Reference links and contact information
+
+paths:
+  /hos/summary:
+    get:
+      operationId: getHosSummary
+      tags: [compliance]
+      summary: Get a high-level summary of HOS applicability
+      responses:
+        "200":
+          description: HOS summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HosSummary"
+
+  /hos/compliance:
+    get:
+      operationId: getComplianceRequirements
+      tags: [compliance]
+      summary: Get HOS compliance criteria
+      responses:
+        "200":
+          description: Compliance requirements
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplianceRequirements"
+
+  /hos/commerce:
+    get:
+      operationId: getCommerceDefinitions
+      tags: [commerce]
+      summary: Get interstate and intrastate commerce definitions
+      responses:
+        "200":
+          description: Commerce definitions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommerceDefinitions"
+
+  /hos/duty-status:
+    get:
+      operationId: getDutyStatusDefinitions
+      tags: [duty-status]
+      summary: Get on-duty and off-duty definitions
+      responses:
+        "200":
+          description: Duty status definitions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DutyStatusDefinitions"
+
+  /hos/limits:
+    get:
+      operationId: getHosLimits
+      tags: [limits]
+      summary: Get the core HOS limits
+      responses:
+        "200":
+          description: HOS limits
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HosLimits"
+
+  /hos/exceptions:
+    get:
+      operationId: listHosExceptions
+      tags: [exceptions]
+      summary: List HOS exceptions
+      parameters:
+        - name: category
+          in: query
+          required: false
+          description: Optional category filter
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of exceptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HosException"
+
+  /hos/exceptions/{exceptionId}:
+    get:
+      operationId: getHosExceptionById
+      tags: [exceptions]
+      summary: Get a specific HOS exception
+      parameters:
+        - name: exceptionId
+          in: path
+          required: true
+          description: Exception identifier
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Exception details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HosException"
+        "404":
+          description: Exception not found
+
+  /hos/logging:
+    get:
+      operationId: getLoggingRequirements
+      tags: [logging]
+      summary: Get ELD and RODS requirements
+      responses:
+        "200":
+          description: Logging requirements
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoggingRequirements"
+
+  /hos/resources:
+    get:
+      operationId: getHosResources
+      tags: [resources]
+      summary: Get FMCSA resource links and contact info
+      responses:
+        "200":
+          description: Resource links
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceLinks"
+
+components:
+  schemas:
+    HosSummary:
+      type: object
+      properties:
+        guide_title:
+          type: string
+          example: Interstate Truck Driver's Guide to Hours of Service
+        audience:
+          type: string
+          example: Property-carrying CMV drivers operating in interstate commerce
+        disclaimer:
+          type: string
+          example: This is a guide only and does not have the force and effect of law.
+        governing_regulation:
+          type: string
+          example: 49 CFR Part 395
+
+    ComplianceRequirements:
+      type: object
+      properties:
+        applies_when:
+          type: array
+          items:
+            type: string
+          example:
+            - CMV used on highways in interstate commerce
+            - Transporting property
+            - Weighs 10,001 lbs or more including load
+            - Has GVWR or GCWR of 10,001 lbs or more
+            - Transporting placarded hazardous materials
+        key_reference:
+          type: string
+          example: 49 CFR Part 395
+
+    CommerceDefinitions:
+      type: object
+      properties:
+        interstate:
+          type: object
+          properties:
+            description:
+              type: string
+              example: >
+                Trade, traffic, or transportation between a State and a place
+                outside that State, between two places in a State through another
+                State, or as part of trade originating or terminating outside
+                the State or the United States.
+            cfr_reference:
+              type: string
+              example: § 390.5T
+        intrastate:
+          type: object
+          properties:
+            description:
+              type: string
+              example: >
+                Transportation not covered by the interstate definition, usually
+                occurring within a single State.
+            note:
+              type: string
+              example: Federal HOS generally do not apply, but State rules may.
+
+    DutyStatusDefinitions:
+      type: object
+      properties:
+        on_duty:
+          type: object
+          properties:
+            cfr_reference:
+              type: string
+              example: § 395.2
+            description:
+              type: string
+              example: >
+                All time working or required to be ready to work for any
+                employer.
+            includes:
+              type: array
+              items:
+                type: string
+              example:
+                - Waiting to be dispatched
+                - Inspecting, servicing, fueling, or washing a truck
+                - Driving a CMV
+                - Loading, unloading, supervising, or paperwork
+                - Caring for a broken-down truck
+                - Drug/alcohol testing
+                - Other work for a motor carrier
+                - Paid work for a non-motor-carrier employer
+            exclusions:
+              type: array
+              items:
+                type: string
+              example:
+                - Resting in a parked CMV
+                - Resting in a sleeper berth
+                - Up to 3 hours passenger-seat time paired with 7 sleeper hours
+        off_duty:
+          type: object
+          properties:
+            description:
+              type: string
+              example: >
+                Relieved of all duty and responsibility, free to pursue
+                activities of own choosing, and able to leave where the vehicle
+                is parked.
+        personal_conveyance:
+          type: object
+          properties:
+            description:
+              type: string
+              example: >
+                Movement of a CMV for personal use while off duty when relieved
+                from all work responsibility.
+        yard_moves:
+          type: object
+          properties:
+            description:
+              type: string
+              example: >
+                Transfers of CMVs between locations within a terminal or similar
+                private facility; classified as on-duty not driving under ELD
+                rules.
+
+    HosLimits:
+      type: object
+      properties:
+        fourteen_hour_window:
+          type: object
+          properties:
+            cfr_reference:
+              type: string
+              example: § 395.3(a)(2)
+            window_hours:
+              type: integer
+              example: 14
+            off_duty_required_before:
+              type: integer
+              example: 10
+            description:
+              type: string
+              example: >
+                A 14 consecutive-hour driving window begins when any work starts.
+        eleven_hour_limit:
+          type: object
+          properties:
+            cfr_reference:
+              type: string
+              example: § 395.3(a)(3)
+            max_driving_hours:
+              type: integer
+              example: 11
+            break_threshold_hours:
+              type: integer
+              example: 8
+            break_required_minutes:
+              type: integer
+              example: 30
+        sleeper_berth:
+          type: object
+          properties:
+            cfr_reference:
+              type: string
+              example: § 395.1(g)
+            options:
+              type: array
+              items:
+                type: string
+              example:
+                - 10 consecutive hours in sleeper berth
+                - 7 consecutive hours in sleeper berth + up to 3 hours off duty or passenger
+                - Split sleeper berth: 7 hours + 2 hours qualifying rest
+        thirty_minute_break:
+          type: object
+          properties:
+            cfr_reference:
+              type: string
+              example: § 395.3(a)(3)(ii)
+            description:
+              type: string
+              example: Required after 8 cumulative driving hours; may be on duty, off duty, or in sleeper berth.
+            applies_to_short_haul:
+              type: boolean
+              example: false
+        weekly_limit:
+          type: object
+          properties:
+            cfr_reference:
+              type: string
+              example: § 395.3(b)
+            sixty_hour_seven_day:
+              type: object
+              properties:
+                hours:
+                  type: integer
+                  example: 60
+                days:
+                  type: integer
+                  example: 7
+            seventy_hour_eight_day:
+              type: object
+              properties:
+                hours:
+                  type: integer
+                  example: 70
+                days:
+                  type: integer
+                  example: 8
+            rolling_basis:
+              type: boolean
+              example: true
+        restart:
+          type: object
+          properties:
+            cfr_references:
+              type: array
+              items:
+                type: string
+              example:
+                - § 395.3(c)(1)
+                - § 395.3(c)(2)
+            hours_required:
+              type: integer
+              example: 34
+            optional:
+              type: boolean
+              example: true
+
+    HosException:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cdl-short-haul
+        title:
+          type: string
+          example: CDL Short-Haul Exception
+        cfr_section:
+          type: string
+          example: § 395.1(e)(1)
+        exception_type:
+          type: array
+          items:
+            type: string
+          example:
+            - No ELD/logbook required when using time records
+            - 30-minute break does not apply
+        conditions:
+          type: array
+          items:
+            type: string
+          example:
+            - Return to normal work reporting location within 14 consecutive hours
+            - Operate within 150 air-mile radius
+            - At least 10 consecutive hours off duty between shifts
+            - 11-hour driving limit still applies
+        notes:
+          type: string
+          nullable: true
+
+    LoggingRequirements:
+      type: object
+      properties:
+        primary_method:
+          type: string
+          example: ELD
+        eld_info_url:
+          type: string
+          format: uri
+          example: https://eld.fmcsa.dot.gov
+        paper_log_allowed_when:
+          type: array
+          items:
+            type: string
+          example:
+            - RODS required 8 or fewer days in the last 30 days
+            - Driveaway-towaway operations
+            - Vehicles manufactured before model year 2000
+        required_rods_fields:
+          type: array
+          items:
+            type: string
+          example:
+            - Date
+            - Total miles driven today
+            - Truck or tractor and trailer number
+            - Name of carrier
+            - Main office address
+            - Driver's signature
+            - Name of co-driver
+            - Time base
+            - Remarks
+            - Total hours
+            - Shipping documents
+
+    ResourceLinks:
+      type: object
+      properties:
+        hos_web_page:
+          type: string
+          format: uri
+          example: https://www.fmcsa.dot.gov/regulations/hours-of-service
+        eld_information:
+          type: string
+          format: uri
+          example: https://eld.fmcsa.dot.gov
+        personal_conveyance_guidance:
+          type: string
+          format: uri
+          example: https://www.fmcsa.dot.gov/regulations/hours-service/personal-conveyance
+        information_line:
+          type: string
+          example: 1-800-832-5660
+        email:
+          type: string
+          format: email
+          example: hoursofservice@dot.gov
