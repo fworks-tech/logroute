@@ -1,0 +1,14 @@
+/* Leaflet requires explicit CSS import */
+@import 'leaflet/dist/leaflet.css';
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Fix leaflet map z-index conflict with MUI modals */
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 400;
+}
