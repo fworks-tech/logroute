@@ -65,6 +65,8 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
   const cycleSchedule = watch('cycleSchedule') || '70';
   const cycleMax = cycleSchedule === '60' ? 60 : 70;
   const sessionCycleTotal = useTripStore((s) => s.sessionCycleTotal());
+  const isCycleFull = cycleValue >= cycleMax;
+  const isCycleExceeded = cycleValue > cycleMax;
 
   const handleQuickFill = (fill: typeof QUICK_FILLS[number]) => {
     currentGeocode.setInputValue(fill.current);
@@ -165,6 +167,16 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
                   {sessionCycleTotal.toFixed(1)} / {cycleMax} hrs
                 </Typography>
               </Box>
+            )}
+            {isCycleExceeded && (
+              <Typography variant="caption" sx={{ color: '#ef4444', display: 'block', mt: 0.5, fontWeight: 600 }}>
+                ⚠ Cycle hours exceed the {cycleMax}-hour limit.
+              </Typography>
+            )}
+            {isCycleFull && !isCycleExceeded && (
+              <Typography variant="caption" sx={{ color: '#f59e0b', display: 'block', mt: 0.5, fontWeight: 600 }}>
+                ⚠ Cycle limit of {cycleMax} hours reached. A 34-hour restart will be required.
+              </Typography>
             )}
           </Box>
 

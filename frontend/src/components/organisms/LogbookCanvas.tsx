@@ -136,6 +136,7 @@ function drawHeader(ctx: CanvasRenderingContext2D, day: LogbookDay, tractorNumbe
   ctx.font = 'bold 10px "Inter", "Courier New", monospace';
   ctx.fillText(`Miles Today: ${day.daily_miles.toFixed(0)} mi`, 14, HEADER_FIELD_Y + 66);
   ctx.fillText(`Driving Today: ${day.total_driving_hours.toFixed(1)} hrs`, 14, HEADER_FIELD_Y + 80);
+  ctx.fillText('Co-Driver: _______________  Time Zone: Local  Shipping Doc: _______________', 14, HEADER_FIELD_Y + 94);
 
   ctx.strokeStyle = '#000000';
   ctx.lineWidth = 2;
