@@ -2,11 +2,24 @@
 
 > **FMCSA-compliant ELD logbook & route planner** — Plan trips, enforce Hours of Service rules, and generate DOT-ready daily log sheets in one click.
 
+**Live app:** [https://logroute-app.vercel.app](https://logroute-app.vercel.app)
+
 ---
 
 ## Overview
 
-LogRoute is a full-stack monolith that takes trip details (current location, pickup, dropoff, cycle hours used) and outputs an interactive route map with fuel/rest markers and rendered FMCSA daily log sheets. No external API keys required — uses free OpenStreetMap services.
+LogRoute takes trip details (current location, pickup, dropoff, cycle hours used) and outputs an interactive route map with fuel/rest markers and rendered FMCSA daily log sheets.
+
+**Inputs:**
+- Current location
+- Pickup location
+- Dropoff location
+- Current cycle hours used
+
+**Outputs:**
+- Interactive route map with markers (fuel, rest, pickup, dropoff)
+- FMCSA-compliant ELD daily log sheets
+- Trip summary statistics (distance, duration, stops)
 
 ---
 
@@ -14,26 +27,31 @@ LogRoute is a full-stack monolith that takes trip details (current location, pic
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React 19, TypeScript 5.5, Material-UI v6, Zustand, TanStack Query, react-leaflet |
-| Backend | Django 4.2, Django REST Framework 3.15, DRF Spectacular (OpenAPI) |
-| Database | PostgreSQL 15 (Docker) / SQLite (local dev) |
-| Geocoding | Nominatim (OpenStreetMap) — free |
-| Routing | OSRM (OpenStreetMap) — free |
-| Simulation | Custom HOS Engine — all 5 FMCSA rules |
+| **Frontend** | React 19, TypeScript 5.5, MUI 6, Zustand, TanStack Query, Leaflet |
+| **Backend** | Django 4.2, DRF 3.15, DRF Spectacular (OpenAPI), SimpleJWT |
+| **Database** | PostgreSQL 15 (Railway) / SQLite (local dev) |
+| **API Design** | Atomic Design (`atoms/`, `molecules/`, `organisms/`) |
+| **Geocoding** | Nominatim (OpenStreetMap) — free |
+| **Routing** | OSRM (OpenStreetMap) — free |
+| **HOS Engine** | Custom FMCSA rule simulator |
+
+**Deployment:**
+
+| Service | Provider | URL |
+|---------|----------|-----|
+| Frontend | Vercel | [logroute-app.vercel.app](https://logroute-app.vercel.app) |
+| Backend | Railway | `logroute-api-backend-production.up.railway.app` |
+| Database | Railway PostgreSQL | Internal, auto-provisioned |
+| Source | GitHub | [github.com/fworks-tech/logroute](https://github.com/fworks-tech/logroute) |
 
 ---
 
 ## Quick Start
 
 ```bash
-# Clone & enter
-git clone <repo-url>
-cd logroute
-
 # Backend
 cd backend
-python -m venv venv
-.\venv\Scripts\activate       # Windows
+python -m venv venv && .\venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver 8000
@@ -46,39 +64,33 @@ npm run dev
 
 Open **http://localhost:3000**
 
-> **No Docker required by default** — the app uses SQLite for local development.  
-> To use PostgreSQL: `docker compose -f docker\docker-compose.yml up -d` and set `DATABASE_URL` in `.env`.
+> Local dev uses SQLite by default. For PostgreSQL: `docker compose -f docker/docker-compose.yml up -d` and set `DATABASE_URL` in `.env`.
 
 ---
 
 ## How It Works
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                         BROWSER                                  │
-│                                                                  │
-│   TripForm ──► POST /api/plan-route/ ──► TripResults             │
-│     (4 inputs)          │                    ├── RouteMap        │
-│                         │                    ├── LogbookCanvas   │
-│                         ▼                    └── Stats           │
-│                   Django REST API                                │
-│                         │                                        │
-│          ┌──────────────┼──────────────┐                         │
-│          ▼              ▼              ▼                         │
-│     Nominatim        OSRM         HOS Engine                     │
-│   (geocoding)     (routing)     (simulation)                     │
-│   3 locations     2 legs        5 FMCSA rules                    │
-└──────────────────────────────────────────────────────────────────┘
+TripForm ──► POST /api/plan-route/ ──► TripResults
+  (4 inputs)         │                    ├── RouteMap (Leaflet + OSM)
+                     │                    ├── LogbookCanvas (MCSA-5890)
+                     ▼                    └── StatCards
+              Django REST API
+                     │
+        ┌────────────┼────────────┐
+        ▼            ▼            ▼
+   Nominatim       OSRM       HOS Engine
+  (geocode 3x)  (2 legs)     (5 FMCSA rules)
 ```
 
 ### Step by step
 
-1. **You enter** — current location, pickup, dropoff, and cycle hours used
-2. **Backend geocodes** all 3 addresses via Nominatim
-3. **OSRM calculates** the driving route (2 legs: current→pickup, pickup→dropoff)
-4. **HOS Engine simulates** the trip enforcing all 5 FMCSA rules
-5. **Response returns** — route coordinates, markers, logbook days, summary
-6. **Frontend renders** — interactive map with amber polyline + canvas log sheets
+1. **You enter** — current location, pickup, dropoff, cycle hours used
+2. **Backend geocodes** all 3 addresses via Nominatim (cached 24h)
+3. **OSRM calculates** the driving route (current→pickup→dropoff)
+4. **HOS Engine simulates** the trip enforcing all FMCSA rules
+5. **Response** — route coordinates, markers, logbook days, summary
+6. **Frontend renders** — interactive map + ELD log sheets + stats
 
 ---
 
@@ -95,30 +107,21 @@ Open **http://localhost:3000**
 }
 ```
 
-**Response** — route polyline, map markers with labels, multi-day logbook with HOS events, and trip statistics.
+**Response** — route polyline, map markers, multi-day logbook, trip summary.
 
-```
-200 OK
-{
-  "route_coordinates": [[lon, lat], ...],
-  "markers": [{ "type": "start|pickup|dropoff|fuel|rest", "lat": ..., "lon": ..., "label": "..." }],
-  "logbook_days": [
-    {
-      "day": 1,
-      "date": "06/29/2026",
-      "events": [{ "status": "DRIVING", "start_time": "08:00", "end_time": "19:00", "duration_hours": 11, "label": "Driving to Pickup" }],
-      "row_totals": { "driving_hours": 11, "on_duty_not_driving_hours": 1, ... }
-    }
-  ],
-  "trip_summary": {
-    "total_distance_miles": 966.9,
-    "total_trip_hours": 29.6,
-    "total_driving_hours": 17.1,
-    "fuel_stops": 0,
-    "rest_stops": 1
-  }
-}
-```
+Full OpenAPI schema at [`/api/schema/`](https://logroute-api-backend-production.up.railway.app/api/schema/) (backend must be running).
+
+### Other endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/geocode/` | GET | Nominatim search suggestions (`?q=Chicago`) |
+| `/api/auth/token/` | POST | JWT token obtain |
+| `/api/auth/register/` | POST | User registration |
+| `/api/hos/summary/` | GET | FMCSA HOS rules summary |
+| `/api/hos/compliance/` | GET | Compliance requirements |
+| `/api/hos/limits/` | GET | Driving limits reference |
+| `/api/docs/` | GET | Swagger UI (backend only) |
 
 ---
 
@@ -126,53 +129,12 @@ Open **http://localhost:3000**
 
 | # | Rule | Value | What happens |
 |---|------|-------|-------------|
-| 1 | **Driving limit** | 11 hrs/shift | Rest reset enforced after 11h driving |
-| 2 | **On-duty window** | 14 hrs/shift | Cannot drive after 14h on-duty |
+| 1 | **Driving limit** | 11 hrs/shift | 10hr reset after 11h driving |
+| 2 | **On-duty window** | 14 hrs/shift | No driving after 14h on-duty |
 | 3 | **Mandatory break** | 30 min after 8h driving | Break inserted automatically |
-| 4 | **Cycle limit** | 70 hrs / 8 days | 34-hr reset if cycle is full |
+| 4 | **Cycle limit** | 70hr/8day (or 60hr/7day) | 34-hr restart if cycle is full |
 | 5 | **Fuel stop** | Every 1,000 mi | 30-min ON_DUTY_NOT_DRIVING |
-| 6 | **Pickup/Dropoff** | 1 hr each | ON_DUTY_NOT_DRIVING at each location |
-
----
-
-## ELD Log Sheet
-
-The `LogbookCanvas` renders realistic **FMCSA Form MCSA-5890** style log sheets:
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│  DRIVER'S DAILY LOG                                          │
-│  Date: 06/29/2026    Carrier: LogRoute Transport             │
-│  From: Chicago, IL   To: Dallas, TX                          │
-│  Tractor: TRAC-001   Trailer: TRAIL-002                      │
-├──────────────────────────────────────────────────────────────┤
-│       │ 1  2  3  4  5  6  7  8  9  10 11 12 ... 24         │
-│───────┼──────────────────────────────────────────────────────│
-│Off    │ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
-│Duty   │                                                      │
-│───────┼──────────────────────────────────────────────────────│
-│Sleeper│                                                      │
-│Berth  │                                                      │
-│───────┼──────────────────────────────────────────────────────│
-│Driving│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓              │
-│       │                                                      │
-│───────┼──────────────────────────────────────────────────────│
-│On-Duty│          ▓▓▓▓▓▓▓▓▓▓▓▓                                │
-│Not Drv│                                                      │
-├──────────────────────────────────────────────────────────────┤
-│ REMARKS:  Chicago, IL (Pickup)                               │
-│           Dallas, TX (Dropoff)                                │
-├──────────────────────────────────────────────────────────────┤
-│ A. On Duty Today: 12.0h   B. Available: 52.0h   C. 70h Cap│
-└──────────────────────────────────────────────────────────────┘
-```
-
-- White paper background with black grid — authentic FMCSA look
-- Colored duty status segments with duration labels
-- Remarks section for location annotations
-- Cycle recap (70hr/8-day tracking)
-- Multi-day support with tab navigation
-- Console-free, print-friendly
+| 6 | **Pickup/Dropoff** | 1 hr each | ON_DUTY_NOT_DRIVING at each |
 
 ---
 
@@ -180,67 +142,84 @@ The `LogbookCanvas` renders realistic **FMCSA Form MCSA-5890** style log sheets:
 
 ```
 logroute/
-├── frontend/                         # React 19 + TypeScript + MUI
+├── frontend/                          # React 19 + Vite + TypeScript
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── TripForm.tsx          # Route planner form (4 inputs)
-│   │   │   ├── TripResults.tsx       # Results dashboard
-│   │   │   ├── RouteMap.tsx          # Interactive route map
-│   │   │   ├── LogbookCanvas.tsx     # FMCSA ELD log sheet renderer
-│   │   │   ├── ErrorAlert.tsx        # Error display
-│   │   │   └── ui/                   # Reusable UI primitives
-│   │   ├── hooks/                    # useTripPlanner, useEldColors, etc.
-│   │   ├── lib/                      # API client, Zod schemas, logger
-│   │   ├── store/                    # Zustand state
-│   │   ├── types/                    # TypeScript interfaces
-│   │   ├── theme.ts                  # Dark + amber MUI theme
-│   │   ├── App.tsx                   # Main app with sidebar + map
-│   │   └── main.tsx                  # Entry point
+│   │   │   ├── atoms/                 # Smallest primitives
+│   │   │   │   ├── LoadingButton.tsx
+│   │   │   │   ├── StatCard.tsx
+│   │   │   │   ├── SectionPaper.tsx
+│   │   │   │   ├── StatusChip.tsx
+│   │   │   │   └── ErrorBoundary.tsx
+│   │   │   ├── molecules/             # Simple combinations
+│   │   │   │   ├── ErrorAlert.tsx
+│   │   │   │   └── LogbookDayDetail.tsx
+│   │   │   └── organisms/             # Complex sections
+│   │   │       ├── TripForm.tsx        # Route planner form
+│   │   │       ├── TripResults.tsx     # Results dashboard
+│   │   │       ├── RouteMap.tsx        # Interactive Leaflet map
+│   │   │       ├── LogbookCanvas.tsx   # FMCSA ELD log sheet
+│   │   │       └── SessionPanel.tsx    # Trip history
+│   │   ├── hooks/                     # Custom React hooks
+│   │   ├── lib/                       # API client, Zod schemas, logger
+│   │   ├── store/                     # Zustand state management
+│   │   ├── types/                     # TypeScript interfaces
+│   │   ├── theme.ts                   # MUI theme
+│   │   ├── App.tsx                    # Main app layout
+│   │   └── main.tsx                   # Entry point
+│   ├── vercel.json                    # Vercel deployment config
 │   ├── package.json
-│   ├── vite.config.ts
-│   └── tsconfig.json
+│   └── vite.config.ts
 │
-├── backend/                          # Django 4.2 + DRF
-│   ├── logroute/                     # Django project
-│   │   ├── settings.py
-│   │   ├── urls.py                   # API routes + SPA catch-all
+├── backend/                           # Django 4.2 + DRF
+│   ├── logroute/                      # Django project config
+│   │   ├── settings.py                # Env-driven configuration
+│   │   ├── urls.py                    # API routes + SPA fallback
 │   │   └── wsgi.py
-│   ├── trips/                        # Core app
-│   │   ├── views.py                  # PlanRouteView, GeocodeSearchView
-│   │   ├── serializers.py            # Request/response validation
-│   │   ├── routing.py                # Nominatim + OSRM integration
-│   │   ├── hos_engine.py             # FMCSA HOS rule simulator
-│   │   ├── services.py               # TripPlanningService orchestrator
-│   │   ├── error_handler.py          # Circuit breaker + retry logic
-│   │   └── models.py                 # Trip model
+│   ├── trips/                         # Core application
+│   │   ├── views.py                   # PlanRoute, Geocode, Auth views
+│   │   ├── serializers.py             # Request/response validation
+│   │   ├── routing.py                 # Nominatim + OSRM integration
+│   │   ├── hos_engine.py              # FMCSA HOS rule simulator
+│   │   ├── services.py                # Trip planning orchestrator
+│   │   ├── error_handler.py           # Circuit breaker + retry
+│   │   ├── middleware.py              # Request logging + error handling
+│   │   ├── throttles.py               # Rate limiting
+│   │   ├── models.py                  # Trip model
+│   │   └── tests/                     # 39 tests, 87% coverage
 │   ├── manage.py
 │   └── requirements.txt
 │
 ├── docker/
-│   ├── Dockerfile                    # Multi-stage production build
-│   └── docker-compose.yml            # PostgreSQL + Redis
-│
-├── scripts/
-│   └── bootstrap.ps1                 # Windows one-click setup
+│   └── docker-compose.yml             # PostgreSQL + Redis
 │
 ├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── API_CONTRACT.md
-│   └── HOS_ENGINE.md
+│   ├── fmcsahos395driversguidetohos2022042801.md       # FMCSA rulebook
+│   └── fmcsahos395driversguidetohos2022042801.openapi.yaml  # OpenAPI spec
 │
-└── .env.example
+└── vercel.json                        # Root Vercel deployment config
 ```
 
 ---
 
-## Deployment (single process)
+## Deployment
 
-Django serves the React build as static files — one process, one port, simple to deploy.
+### Frontend (Vercel)
 
-```bash
-cd frontend && npm run build
-cd ../backend && python manage.py collectstatic --noinput
-gunicorn logroute.wsgi:application --bind 0.0.0.0:8000 --workers 4
+Auto-deploys from `main` branch. Config in `vercel.json`:
+- Build: `cd frontend && npm run build` → `frontend/dist/`
+- API proxy: `/api/*` → Railway backend
+- SPA fallback: all routes → `/index.html`
+
+### Backend (Railway)
+
+Deployed from GitHub repo. Environment variables:
+```
+DJANGO_SECRET_KEY=<auto-generated>
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=logroute-app.vercel.app,.railway.app,.up.railway.app
+CORS_ALLOWED_ORIGINS=https://logroute-app.vercel.app
+DATABASE_URL=postgresql://...         # Auto-provisioned by Railway
 ```
 
 ---
@@ -248,17 +227,20 @@ gunicorn logroute.wsgi:application --bind 0.0.0.0:8000 --workers 4
 ## Development
 
 ```bash
-# Backend commands (from backend/)
-python manage.py runserver          # Start dev server
-python manage.py test trips/        # Run tests
-python manage.py shell              # Django shell
-http://localhost:8000/api/docs/      # Swagger UI
+# Backend
+python manage.py runserver              # Dev server (port 8000)
+pytest                                  # 39 tests, 87% coverage
+coverage html                           # HTML coverage report
 
-# Frontend commands (from frontend/)
-npm run dev                          # Vite dev server (port 3000)
-npm run build                        # Production build
-npm run test                         # Run tests
-npm run lint                         # TypeScript check
+# Frontend
+npm run dev                             # Vite dev server (port 3000)
+npm run build                           # tsc + vite production build
+npm run test:unit                       # Vitest unit tests
+npm run test:e2e                        # Playwright e2e tests
+
+# API docs (backend running)
+http://localhost:8000/api/docs/         # Swagger UI
+http://localhost:8000/api/schema/       # OpenAPI JSON
 ```
 
 ---

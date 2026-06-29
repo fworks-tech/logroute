@@ -18,6 +18,9 @@ npm run dev
 
 Backend on `:8000`, frontend on `:3000` (proxies `/api` to backend).
 
+**Live app:** https://logroute-app.vercel.app
+**GitHub:** https://github.com/fworks-tech/logroute
+
 ## Commands
 
 | Scope | Command | What it does |
