@@ -44,19 +44,21 @@ export function TripResults({ result }: TripResultsProps) {
 
   return (
     <Box>
-      <Button
-        variant="contained"
-        color="secondary"
-        fullWidth
-        size="large"
-        startIcon={<Download />}
-        onClick={() => logbookRef.current?.exportPdf()}
-        sx={{ mb: 2, py: 1.2, fontWeight: 700 }}
-      >
-        Download Logbook PDF
-      </Button>
+      <Box data-tour="download-pdf">
+        <Button
+          variant="contained"
+          color="secondary"
+          fullWidth
+          size="large"
+          startIcon={<Download />}
+          onClick={() => logbookRef.current?.exportPdf()}
+          sx={{ mb: 2, py: 1.2, fontWeight: 700 }}
+        >
+          Download Logbook PDF
+        </Button>
+      </Box>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
+      <Box data-tour="trip-summary"><Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0D3B4E' }}>Trip Summary</Typography>
           {(result.tractor_number || result.trailer_number || result.shipper_name) && (
@@ -72,13 +74,13 @@ export function TripResults({ result }: TripResultsProps) {
             <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} delay={i * 0.08} />
           ))}
         </Box>
-      </Paper>
+      </Paper></Box>
 
-      <SectionPaper title="Route Map">
+      <Box data-tour="route-map"><SectionPaper title="Route Map">
         <RouteMap coords={coords} markers={markers} />
-      </SectionPaper>
+      </SectionPaper></Box>
 
-      <SectionPaper title="Daily Hours Breakdown">
+      <Box data-tour="daily-breakdown"><SectionPaper title="Daily Hours Breakdown">
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
           {chartData.map((d, i) => (
             <Box key={i} sx={{ flex: '1 1 150px', p: 1.5, bgcolor: '#f1f5f9', borderRadius: 1 }}>
@@ -94,15 +96,15 @@ export function TripResults({ result }: TripResultsProps) {
             </Box>
           ))}
         </Box>
-      </SectionPaper>
+      </SectionPaper></Box>
 
-      <SectionPaper title="ELD Logbook" subtitle={`${days.length} sheet${days.length > 1 ? 's' : ''}`}>
+      <Box data-tour="logbook-sheet"><SectionPaper title="ELD Logbook" subtitle={`${days.length} sheet${days.length > 1 ? 's' : ''}`}>
         <LogbookCanvas ref={logbookRef} days={days} cycleSchedule={result.cycle_schedule} cycleMaxHours={result.cycle_max_hours}
           tractorNumber={result.tractor_number} trailerNumber={result.trailer_number} shipperName={result.shipper_name} tripDate={result.trip_date} />
         <Box sx={{ mt: 2 }}>
           <LogbookDayDetail days={days} />
         </Box>
-      </SectionPaper>
+      </SectionPaper></Box>
     </Box>
   );
 }

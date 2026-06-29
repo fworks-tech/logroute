@@ -8,3 +8,4 @@ export type { StatusChipProps } from './StatusChip';
 export { SectionPaper } from './SectionPaper';
 export type { SectionPaperProps } from './SectionPaper';
 export { ErrorBoundary } from './ErrorBoundary';
+export { TourTooltip } from './TourTooltip';

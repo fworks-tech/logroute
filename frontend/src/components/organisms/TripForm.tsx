@@ -115,7 +115,7 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
   return (
     <Box>
       {/* Quick fills */}
-      <Box sx={{ mb: 3 }}>
+      <Box data-tour="quick-fills" sx={{ mb: 3 }}>
         <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mb: 1 }}>Quick Examples</Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           {QUICK_FILLS.map((fill) => (
@@ -129,12 +129,12 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack spacing={3}>
-          {geocodeInput('currentLocation', currentGeocode, <MyLocationIcon />, 'Current Location', 'e.g., Chicago, IL')}
-          {geocodeInput('pickupLocation', pickupGeocode, <LocalShippingIcon />, 'Pickup Location', 'e.g., Indianapolis, IN')}
-          {geocodeInput('dropoffLocation', dropoffGeocode, <FlagIcon />, 'Dropoff Location', 'e.g., Dallas, TX')}
+          <Box data-tour="current-location">{geocodeInput('currentLocation', currentGeocode, <MyLocationIcon />, 'Current Location', 'e.g., Chicago, IL')}</Box>
+          <Box data-tour="pickup-location">{geocodeInput('pickupLocation', pickupGeocode, <LocalShippingIcon />, 'Pickup Location', 'e.g., Indianapolis, IN')}</Box>
+          <Box data-tour="dropoff-location">{geocodeInput('dropoffLocation', dropoffGeocode, <FlagIcon />, 'Dropoff Location', 'e.g., Dallas, TX')}</Box>
 
           {/* Cycle Schedule + Hours */}
-          <Box>
+          <Box data-tour="cycle-hours">
             <Controller name="cycleHoursUsed" control={control} render={({ field }) => (
               <TextField {...field} id="cycleHoursUsed" label={
                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -148,9 +148,9 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
                 slotProps={{ htmlInput: { min: 0, max: cycleMax - 0.5, step: 0.5 }, input: { startAdornment: <AccessTimeIcon sx={{ mr: 1, color: '#94a3b8' }} /> } }}
                 onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} />
             )} />
-            <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="caption" sx={{ color: '#94a3b8' }}>{cycleValue.toFixed(1)} / {cycleMax} hrs used</Typography>
-              <Controller name="cycleSchedule" control={control} render={({ field }) => (
+                    <Box data-tour="cycle-schedule" sx={{ mt: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="caption" sx={{ color: '#94a3b8' }}>{cycleValue.toFixed(1)} / {cycleMax} hrs used</Typography>
+                      <Controller name="cycleSchedule" control={control} render={({ field }) => (
                 <FormControl size="small">
                   <FormLabel sx={{ fontSize: 11, color: '#64748b' }}>Cycle Schedule</FormLabel>
                   <RadioGroup row {...field} sx={{ gap: 0 }}>
@@ -183,7 +183,7 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
           </Box>
 
           {/* Optional Log Details */}
-          <Box sx={{ borderTop: '1px solid #e2e8f0', pt: 2 }}>
+          <Box data-tour="log-details" sx={{ borderTop: '1px solid #e2e8f0', pt: 2 }}>
             <Box onClick={() => setExpandMetadata(!expandMetadata)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', p: 1, borderRadius: 1, '&:hover': { bgcolor: '#f1f5f9' } }}>
               <Typography variant="body2" sx={{ fontWeight: 600, color: '#64748b' }}>Log Details (Optional)</Typography>
               <IconButton size="small" sx={{ transform: expandMetadata ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', color: '#64748b' }}>
@@ -209,12 +209,12 @@ export function TripForm({ onSubmit, isLoading, initialValues }: TripFormProps) 
             </Collapse>
           </Box>
 
-          <LoadingButton type="submit" variant="contained" color="primary" fullWidth size="large" isLoading={isLoading}
+          <Box data-tour="plan-button"><LoadingButton type="submit" variant="contained" color="primary" fullWidth size="large" isLoading={isLoading}
             disabled={!isValid || isLoading}
             loadingLabel="Planning your route…"
             sx={{ mt: 1, py: 1.5, '&.Mui-disabled': { bgcolor: 'primary.main', color: 'primary.contrastText', opacity: 0.45 } }}>
             Plan Route & Generate Logbook
-          </LoadingButton>
+          </LoadingButton></Box>
         </Stack>
       </Box>
     </Box>

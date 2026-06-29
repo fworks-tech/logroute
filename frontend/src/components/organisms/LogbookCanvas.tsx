@@ -379,7 +379,7 @@ export const LogbookCanvas = forwardRef<LogbookCanvasHandle, LogbookCanvasProps>
   return (
     <Box aria-label="ELD logbook sheet">
       {days && days.length > 1 && (
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
+        <Stack data-tour="logbook-day-nav" direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
           <IconButton size="small" onClick={nav.prevDay} disabled={!nav.hasPrev} aria-label="Previous day">
             <ChevronLeft fontSize="small" />
           </IconButton>

@@ -13,6 +13,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import HistoryIcon from '@mui/icons-material/History';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { Joyride } from 'react-joyride';
+import { useTour } from '@/hooks/useTour';
+import { TourTooltip } from '@/components/atoms/TourTooltip';
+import { SHARED_OPTIONS } from '@/lib/tourConfig';
 import { DivIcon } from 'leaflet';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -132,6 +137,25 @@ export default function App() {
   const coordinates = result?.route_coordinates ?? [];
   const routePolyline = useMemo(() => coordinates.map((c) => [c.latitude, c.longitude] as [number, number]), [coordinates]);
 
+  const tour = useTour();
+
+  useEffect(() => {
+    if (!tour.hasCompletedFormTour) {
+      const timer = setTimeout(() => tour.startFormTour(), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const prevResultRef = useRef<typeof result>(null);
+  useEffect(() => {
+    if (result && !prevResultRef.current && tour.hasCompletedFormTour && !tour.hasCompletedResultsTour && !tour.phase) {
+      const timer = setTimeout(() => tour.startResultsTour(), 1000);
+      prevResultRef.current = result;
+      return () => clearTimeout(timer);
+    }
+    prevResultRef.current = result;
+  }, [result]);
+
   useEffect(() => {
     if (result && lastResultRef.current !== result) {
       setToastOpen(true);
@@ -215,15 +239,24 @@ export default function App() {
         </Box>
       )}
 
-      <Box sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Box data-tour="welcome" sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Trip Planner
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <IconButton
+              size="small"
+              aria-label="Start tour"
+              onClick={tour.startFormTour}
+              sx={{ color: '#94A3B8', '&:hover': { color: '#0D3B4E' } }}
+            >
+              <HelpOutlineIcon fontSize="small" />
+            </IconButton>
             <IconButton
               size="small"
               aria-label="View session trips"
+              data-tour="session-history"
               onClick={(e) => setSessionAnchor(e.currentTarget)}
             >
               <Badge badgeContent={sessionTrips.length} color="error" invisible={sessionTrips.length === 0}>
@@ -438,6 +471,37 @@ export default function App() {
           </Typography>
         </Alert>
       </Snackbar>
+
+      {tour.run && (
+        <Joyride
+          run={tour.run}
+          steps={tour.steps}
+          stepIndex={tour.stepIndex}
+          continuous
+          scrollToFirstStep
+          tooltipComponent={TourTooltip}
+          options={{
+            primaryColor: SHARED_OPTIONS.primaryColor,
+            textColor: SHARED_OPTIONS.textColor,
+            backgroundColor: SHARED_OPTIONS.backgroundColor,
+            arrowColor: SHARED_OPTIONS.arrowColor,
+            overlayColor: SHARED_OPTIONS.overlayColor,
+            spotlightRadius: SHARED_OPTIONS.spotlightRadius,
+            width: SHARED_OPTIONS.width,
+            zIndex: SHARED_OPTIONS.zIndex,
+            showProgress: true,
+            skipScroll: false,
+          }}
+          locale={{
+            back: 'Back',
+            close: 'Close',
+            last: 'Done',
+            next: 'Next',
+            skip: 'Skip tour',
+          }}
+          onEvent={tour.handleCallback}
+        />
+      )}
     </Box>
   );
 }
