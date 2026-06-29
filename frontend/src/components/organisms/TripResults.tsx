@@ -57,6 +57,13 @@ export function TripResults({ result }: TripResultsProps) {
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0D3B4E' }}>Trip Summary</Typography>
+          {(result.tractor_number || result.trailer_number || result.shipper_name) && (
+            <Stack direction="row" spacing={2} sx={{ mr: 1 }}>
+              {result.tractor_number && <Typography variant="caption" sx={{ color: '#64748b' }}>Tractor: {result.tractor_number}</Typography>}
+              {result.trailer_number && <Typography variant="caption" sx={{ color: '#64748b' }}>Trailer: {result.trailer_number}</Typography>}
+              {result.shipper_name && <Typography variant="caption" sx={{ color: '#64748b' }}>Shipper: {result.shipper_name}</Typography>}
+            </Stack>
+          )}
         </Stack>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
           {stats.map((s, i) => (
@@ -88,7 +95,8 @@ export function TripResults({ result }: TripResultsProps) {
       </SectionPaper>
 
       <SectionPaper title="ELD Logbook" subtitle={`${days.length} sheet${days.length > 1 ? 's' : ''}`}>
-        <LogbookCanvas ref={logbookRef} days={days} cycleSchedule={result.cycle_schedule} cycleMaxHours={result.cycle_max_hours} />
+        <LogbookCanvas ref={logbookRef} days={days} cycleSchedule={result.cycle_schedule} cycleMaxHours={result.cycle_max_hours}
+          tractorNumber={result.tractor_number} trailerNumber={result.trailer_number} shipperName={result.shipper_name} tripDate={result.trip_date} />
         <Box sx={{ mt: 2 }}>
           <LogbookDayDetail days={days} />
         </Box>

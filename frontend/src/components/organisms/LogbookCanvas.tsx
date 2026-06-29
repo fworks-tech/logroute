@@ -14,6 +14,10 @@ interface LogbookCanvasProps {
   days?: LogbookDay[];
   cycleSchedule?: string;
   cycleMaxHours?: number;
+  tractorNumber?: string;
+  trailerNumber?: string;
+  shipperName?: string;
+  tripDate?: string;
 }
 
 const DUTY_LABELS: Record<DutyStatus, string> = {
@@ -104,7 +108,7 @@ function drawGrid(ctx: CanvasRenderingContext2D) {
   ctx.restore();
 }
 
-function drawHeader(ctx: CanvasRenderingContext2D, day: LogbookDay) {
+function drawHeader(ctx: CanvasRenderingContext2D, day: LogbookDay, tractorNumber?: string, trailerNumber?: string, shipperName?: string) {
   ctx.save();
 
   ctx.fillStyle = '#000000';
@@ -114,7 +118,7 @@ function drawHeader(ctx: CanvasRenderingContext2D, day: LogbookDay) {
   ctx.fillText("DRIVER'S RECORD OF DUTY STATUS (FMCSA §395.8)", CANVAS_WIDTH / 2, HEADER_TITLE_Y + 2);
 
   ctx.font = 'bold 18px "Inter", "Courier New", monospace';
-  ctx.fillText('LOGROUTE TRANSPORT', CANVAS_WIDTH / 2, HEADER_TITLE_Y + 20);
+  ctx.fillText(shipperName || 'LOGROUTE TRANSPORT', CANVAS_WIDTH / 2, HEADER_TITLE_Y + 20);
 
   ctx.font = '10px "Inter", "Courier New", monospace';
   ctx.textAlign = 'left';
@@ -124,9 +128,9 @@ function drawHeader(ctx: CanvasRenderingContext2D, day: LogbookDay) {
   ctx.fillText(`To:   ${day.to_location}`, 14, HEADER_FIELD_Y + 48);
 
   ctx.textAlign = 'right';
-  ctx.fillText('Tractor #: _______________', CANVAS_WIDTH - 14, HEADER_FIELD_Y + 20);
-  ctx.fillText('Trailer #: _______________', CANVAS_WIDTH - 14, HEADER_FIELD_Y + 34);
-  ctx.fillText('Shipper:  _______________', CANVAS_WIDTH - 14, HEADER_FIELD_Y + 48);
+  ctx.fillText(`Tractor #: ${tractorNumber || '_______________'}`, CANVAS_WIDTH - 14, HEADER_FIELD_Y + 20);
+  ctx.fillText(`Trailer #: ${trailerNumber || '_______________'}`, CANVAS_WIDTH - 14, HEADER_FIELD_Y + 34);
+  ctx.fillText(`Shipper:  ${shipperName || '_______________'}`, CANVAS_WIDTH - 14, HEADER_FIELD_Y + 48);
 
   ctx.textAlign = 'left';
   ctx.font = 'bold 10px "Inter", "Courier New", monospace';
@@ -314,11 +318,11 @@ function drawFooter(ctx: CanvasRenderingContext2D) {
   ctx.restore();
 }
 
-function renderCanvas(ctx: CanvasRenderingContext2D, day: LogbookDay, eldColors: ReturnType<typeof useEldColors>, cycleSchedule?: string, cycleMaxHours?: number) {
+function renderCanvas(ctx: CanvasRenderingContext2D, day: LogbookDay, eldColors: ReturnType<typeof useEldColors>, cycleSchedule?: string, cycleMaxHours?: number, tractorNumber?: string, trailerNumber?: string, shipperName?: string) {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  drawHeader(ctx, day);
+  drawHeader(ctx, day, tractorNumber, trailerNumber, shipperName);
   drawGrid(ctx);
   drawEvents(ctx, day.events, eldColors);
   drawRowTotals(ctx, day);
@@ -328,7 +332,7 @@ function renderCanvas(ctx: CanvasRenderingContext2D, day: LogbookDay, eldColors:
 }
 
 export const LogbookCanvas = forwardRef<LogbookCanvasHandle, LogbookCanvasProps>(function LogbookCanvas(
-  { day, days, cycleSchedule, cycleMaxHours },
+  { day, days, cycleSchedule, cycleMaxHours, tractorNumber, trailerNumber, shipperName },
   ref,
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -363,8 +367,8 @@ export const LogbookCanvas = forwardRef<LogbookCanvasHandle, LogbookCanvasProps>
     canvas.style.height = `${CANVAS_HEIGHT}px`;
     ctx.scale(dpr, dpr);
 
-    renderCanvas(ctx, currentDay, eldColors, cycleSchedule, cycleMaxHours);
-  }, [currentDay, eldColors, cycleSchedule, cycleMaxHours]);
+    renderCanvas(ctx, currentDay, eldColors, cycleSchedule, cycleMaxHours, tractorNumber, trailerNumber, shipperName);
+  }, [currentDay, eldColors, cycleSchedule, cycleMaxHours, tractorNumber, trailerNumber, shipperName]);
 
   if (!currentDay) return null;
 
