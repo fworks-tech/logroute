@@ -15,6 +15,8 @@ module.exports = {
     '*.config.ts',
     '.eslintrc.cjs',
     'src/lib/api-client',
+    'src/**/*.test.*',
+    'src/**/*.spec.*',
   ],
   env: {
     browser: true,

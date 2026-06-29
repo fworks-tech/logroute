@@ -476,7 +476,6 @@ export default function App() {
         <Joyride
           run={tour.run}
           steps={tour.steps}
-          stepIndex={tour.stepIndex}
           continuous
           scrollToFirstStep
           tooltipComponent={TourTooltip}

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { EventData } from 'react-joyride';
+import type { EventData, Status } from 'react-joyride';
 import { FORM_STEPS, RESULTS_STEPS, STORAGE_KEY } from '@/lib/tourConfig';
 
 interface TourState {
@@ -21,36 +21,32 @@ function saveState(state: TourState): void {
   } catch { /* ignore */ }
 }
 
+function isTerminal(status: Status): boolean {
+  return status === 'finished' || status === 'skipped';
+}
+
 export function useTour() {
   const [persisted, setPersisted] = useState<TourState>(loadState);
   const [run, setRun] = useState(false);
-  const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<'form' | 'results' | null>(null);
 
   const steps = phase === 'results' ? RESULTS_STEPS : FORM_STEPS;
 
   const startFormTour = useCallback(() => {
     setPhase('form');
-    setStepIndex(0);
     setRun(true);
   }, []);
 
   const startResultsTour = useCallback(() => {
     setPhase('results');
-    setStepIndex(0);
     setRun(true);
-  }, []);
-
-  const stopTour = useCallback(() => {
-    setRun(false);
-    setPhase(null);
   }, []);
 
   const handleCallback = useCallback(
     (data: EventData) => {
-      const { status, index, action } = data;
+      const { status, action } = data;
 
-      if (status === 'finished' || status === 'skipped') {
+      if (isTerminal(status) || action === 'close' || action === 'skip') {
         const next = { ...persisted };
         if (phase === 'form') next.formCompleted = true;
         if (phase === 'results') next.resultsCompleted = true;
@@ -58,34 +54,17 @@ export function useTour() {
         saveState(next);
         setRun(false);
         setPhase(null);
-        return;
       }
-
-      if (action === 'close' || action === 'skip') {
-        const next = { ...persisted };
-        if (phase === 'form') next.formCompleted = true;
-        if (phase === 'results') next.resultsCompleted = true;
-        setPersisted(next);
-        saveState(next);
-        setRun(false);
-        setPhase(null);
-        return;
-      }
-
-      setStepIndex(index);
     },
     [phase, persisted],
   );
 
   return {
     run,
-    stepIndex,
     steps,
     phase,
     startFormTour,
     startResultsTour,
-    stopTour,
-    setStepIndex,
     handleCallback,
     hasCompletedFormTour: persisted.formCompleted,
     hasCompletedResultsTour: persisted.resultsCompleted,
