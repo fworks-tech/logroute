@@ -33,12 +33,12 @@ const DUTY_ROWS: DutyStatus[] = ['OFF_DUTY', 'SLEEPER_BERTH', 'DRIVING', 'ON_DUT
 
 const CANVAS_WIDTH = 960;
 const CANVAS_HEIGHT = 780;
-const LEFT_LABEL_W = 76;
+const LEFT_LABEL_W = 120;
 const GRID_LEFT = LEFT_LABEL_W;
 const HOUR_W = 30;
 const GRID_W = HOUR_W * 24;
 const ROW_H = 54;
-const GRID_TOP = 118;
+const GRID_TOP = 140;
 const GRID_BOTTOM = GRID_TOP + DUTY_ROWS.length * ROW_H;
 const HEADER_TITLE_Y = 16;
 const HEADER_FIELD_Y = 34;
