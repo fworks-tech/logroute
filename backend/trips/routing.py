@@ -1,3 +1,5 @@
+"""Nominatim geocoding and OSRM routing clients with caching, retry, and circuit breakers."""
+
 import json
 import os
 from functools import wraps

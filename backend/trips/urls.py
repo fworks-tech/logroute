@@ -1,3 +1,5 @@
+"""URL routing for all trips API endpoints — plan-route, geocode, auth, and HOS reference."""
+
 from django.urls import path
 
 from .reference_views import (

@@ -1,3 +1,5 @@
+"""Exception hierarchy, retry decorator, and thread-safe circuit breaker for external service calls."""
+
 import logging
 import time
 from dataclasses import dataclass, field
@@ -126,6 +128,7 @@ class CircuitBreaker:
 
     @property
     def state(self) -> str:
+        """Return the current circuit breaker state, transitioning OPEN→HALF_OPEN after recovery timeout."""
         with self._lock:
             if self._state == self.OPEN and self._last_failure_time is not None:
                 if time.monotonic() - self._last_failure_time >= self.recovery_timeout:

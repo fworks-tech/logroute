@@ -1,3 +1,5 @@
+"""Django project configuration — all settings are environment-driven with sensible defaults."""
+
 import os
 from datetime import timedelta
 from pathlib import Path

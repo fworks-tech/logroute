@@ -1,3 +1,5 @@
+"""Root URL configuration — health check, API proxy, OpenAPI schema, Swagger UI, and SPA fallback."""
+
 from django.http import JsonResponse
 from django.urls import include, path
 from django.views.generic import TemplateView

@@ -1,3 +1,5 @@
+"""Trip planning orchestrator — coordinates geocoding, routing, and HOS simulation."""
+
 import logging
 
 from .hos_engine import simulate_trip

@@ -91,10 +91,22 @@ def simulate_trip(
     leg2 = pickup -> dropoff
 
     Args:
-        start_date: Optional start date; defaults to today
-        from_location: Starting location for log header
-        to_location: Destination location for log header
-        cycle_schedule: "60" for 60-hour/7-day or "70" for 70-hour/8-day
+        total_distance_miles: Combined distance of both legs in miles.
+        leg1_hours: Estimated driving hours for leg 1 (current → pickup).
+        leg2_hours: Estimated driving hours for leg 2 (pickup → dropoff).
+        current_cycle_used_hours: Hours already used in the current 60/70-hour cycle.
+        leg1_miles: Distance of leg 1 in miles.
+        leg2_miles: Distance of leg 2 in miles.
+        start_date: Optional start date; defaults to today.
+        from_location: Starting location name for the log header.
+        pickup_location: Pickup location name for the log header.
+        to_location: Destination location name for the log header.
+        cycle_schedule: "60" for 60-hour/7-day or "70" for 70-hour/8-day.
+
+    Returns:
+        A dict with logbook_days (list of day dicts), total_trip_hours,
+        total_driving_hours, num_fuel_stops, num_rest_stops, cycle_schedule,
+        and cycle_max_hours.
     """
     schedule = CYCLE_LIMITS.get(cycle_schedule, CYCLE_LIMITS["70"])
     max_cycle_hours = schedule["hours"]

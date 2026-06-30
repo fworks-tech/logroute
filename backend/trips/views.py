@@ -1,3 +1,5 @@
+"""API views for trip planning, geocoding search, JWT auth, and health check."""
+
 import logging
 
 from rest_framework import status
@@ -27,6 +29,7 @@ class HealthCheckView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return a simple health-check response."""
         serializer = HealthCheckSerializer(data={"status": "ok"})
         serializer.is_valid()
         return Response(serializer.data)
@@ -39,6 +42,7 @@ class PlanRouteView(APIView):
     throttle_classes = [PlanRouteThrottle]
 
     def post(self, request):
+        """Validate trip input, run the planning pipeline, and return route + logbook data."""
         serializer = TripInputSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -79,6 +83,7 @@ class GeocodeSearchView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
+        """Return geocoding autocomplete suggestions for a partial location query."""
         query = request.query_params.get("q", "").strip()
         if len(query) < 2:
             return Response([], status=status.HTTP_200_OK)
@@ -98,6 +103,7 @@ class TokenObtainView(APIView):
     throttle_classes = [AuthThrottle]
 
     def post(self, request):
+        """Validate credentials and return JWT access + refresh tokens."""
         serializer = CustomTokenObtainPairSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -111,6 +117,7 @@ class UserRegistrationView(APIView):
     throttle_classes = [AuthThrottle]
 
     def post(self, request):
+        """Validate registration data, create a new user, and return a success message."""
         serializer = UserRegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

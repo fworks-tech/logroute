@@ -1,3 +1,5 @@
+"""DRF serializers for request validation and response formatting."""
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -103,6 +105,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
+        """Extend the default JWT with email and username claims."""
         token = super().get_token(user)
         token["email"] = user.email
         token["username"] = user.username
@@ -120,6 +123,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "password"]
 
     def create(self, validated_data):
+        """Create a new user with the validated username, email, and password."""
         user = User.objects.create_user(
             username=validated_data["username"],
             email=validated_data["email"],
@@ -141,6 +145,7 @@ class TripSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "user", "created_at", "updated_at"]
 
     def create(self, validated_data):
+        """Create a new trip, automatically assigning the authenticated user from the request context."""
         validated_data["user"] = self.context["request"].user
         return super().create(validated_data)
 

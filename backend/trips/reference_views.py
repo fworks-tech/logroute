@@ -24,6 +24,8 @@ from .hos_reference import (
 
 
 class HosSummarySerializer(serializers.Serializer):
+    """Serialize the HOS guide overview with title, audience, disclaimer, and regulation reference."""
+
     guide_title = serializers.CharField()
     audience = serializers.CharField()
     disclaimer = serializers.CharField()
@@ -37,12 +39,15 @@ class HosSummaryView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the FMCSA HOS guide overview."""
         serializer = HosSummarySerializer(data=HOS_SUMMARY)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
 class ComplianceRequirementsSerializer(serializers.Serializer):
+    """Serialize the conditions under which FMCSA HOS rules apply."""
+
     applies_when = serializers.ListField(child=serializers.CharField())
     key_reference = serializers.CharField()
 
@@ -54,12 +59,15 @@ class ComplianceRequirementsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the FMCSA compliance requirements."""
         serializer = ComplianceRequirementsSerializer(data=COMPLIANCE_REQUIREMENTS)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
 class CommerceDefinitionsSerializer(serializers.Serializer):
+    """Serialize interstate and intrastate commerce definitions."""
+
     interstate = serializers.DictField()
     intrastate = serializers.DictField()
 
@@ -71,12 +79,15 @@ class CommerceDefinitionsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the interstate and intrastate commerce definitions."""
         serializer = CommerceDefinitionsSerializer(data=COMMERCE_DEFINITIONS)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
 class DutyStatusDefinitionsSerializer(serializers.Serializer):
+    """Serialize the definitions for on-duty, off-duty, personal conveyance, and yard moves."""
+
     on_duty = serializers.DictField()
     off_duty = serializers.DictField()
     personal_conveyance = serializers.DictField()
@@ -90,12 +101,15 @@ class DutyStatusDefinitionsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the duty status definitions."""
         serializer = DutyStatusDefinitionsSerializer(data=DUTY_STATUS_DEFINITIONS)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
 class HosLimitsSerializer(serializers.Serializer):
+    """Serialize the core FMCSA HOS limits: 14-hr window, 11-hr drive, sleeper berth, 30-min break, weekly limit, restart."""
+
     fourteen_hour_window = serializers.DictField()
     eleven_hour_limit = serializers.DictField()
     sleeper_berth = serializers.DictField()
@@ -111,12 +125,15 @@ class HosLimitsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the HOS driving limits reference."""
         serializer = HosLimitsSerializer(data=HOS_LIMITS)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
 class HosExceptionSerializer(serializers.Serializer):
+    """Serialize a single HOS exception with its conditions and CFR reference."""
+
     id = serializers.CharField()
     title = serializers.CharField()
     cfr_section = serializers.CharField()
@@ -132,6 +149,7 @@ class HosExceptionsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return all HOS exceptions, optionally filtered by a category query parameter."""
         category = request.query_params.get("category")
         filtered = HOS_EXCEPTIONS
         if category:
@@ -148,6 +166,7 @@ class HosExceptionDetailView(APIView):
     authentication_classes = []
 
     def get(self, request, exception_id):
+        """Return a single HOS exception by its ID, or 404 if not found."""
         for exc in HOS_EXCEPTIONS:
             if exc["id"] == exception_id:
                 serializer = HosExceptionSerializer(data=exc)
@@ -160,6 +179,8 @@ class HosExceptionDetailView(APIView):
 
 
 class LoggingRequirementsSerializer(serializers.Serializer):
+    """Serialize the ELD logging requirements with primary method, paper-log allowances, and required RODS fields."""
+
     primary_method = serializers.CharField()
     eld_info_url = serializers.URLField()
     paper_log_allowed_when = serializers.ListField(child=serializers.CharField())
@@ -173,12 +194,15 @@ class LoggingRequirementsView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the ELD logging requirements."""
         serializer = LoggingRequirementsSerializer(data=LOGGING_REQUIREMENTS)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
 class ResourceLinksSerializer(serializers.Serializer):
+    """Serialize FMCSA resource links and contact information."""
+
     hos_web_page = serializers.URLField()
     eld_information = serializers.URLField()
     personal_conveyance_guidance = serializers.URLField()
@@ -193,6 +217,7 @@ class ResourceLinksView(APIView):
     authentication_classes = []
 
     def get(self, request):
+        """Return the FMCSA resource links."""
         serializer = ResourceLinksSerializer(data=RESOURCE_LINKS)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)

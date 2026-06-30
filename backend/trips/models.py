@@ -1,3 +1,5 @@
+"""Trip model definitions for persisting route plans and ELD logbook data."""
+
 from django.conf import settings
 from django.db import models
 
@@ -6,6 +8,7 @@ class Trip(models.Model):
     """Persisted trip plan with locations, cycle data, route geometry, and ELD logbook."""
 
     class Status(models.TextChoices):
+        """Lifecycle states for a trip: draft → planned → in_progress → completed → cancelled."""
         DRAFT = "draft", "Draft"
         PLANNED = "planned", "Planned"
         IN_PROGRESS = "in_progress", "In Progress"

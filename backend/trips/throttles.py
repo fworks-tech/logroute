@@ -1,3 +1,5 @@
+"""DRF rate-limiting classes for plan-route and auth endpoints."""
+
 from rest_framework.throttling import AnonRateThrottle
 
 
