@@ -1,6 +1,16 @@
+"""Test fixtures and configuration for the trips app.
+
+Ensures SQLite is used for tests so no external PostgreSQL is required.
+Catches Redis connection errors gracefully (optional dependency).
+"""
+
+import os
+
+# Force SQLite for tests — must be set before any Django import.
+os.environ.setdefault("DATABASE_URL", "sqlite:///test_db.sqlite3")
+
 import pytest
 from django.contrib.auth import get_user_model
-from django.core.cache import cache
 from rest_framework.test import APIClient
 
 User = get_user_model()
@@ -14,7 +24,11 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True)
 def _clear_throttle_cache():
-    cache.clear()
+    from django.core.cache import cache
+    try:
+        cache.clear()
+    except ConnectionError:
+        pass  # Redis is optional; skip if unavailable
 
 
 @pytest.fixture

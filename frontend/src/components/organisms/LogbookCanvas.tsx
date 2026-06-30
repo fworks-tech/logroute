@@ -407,7 +407,7 @@ export const LogbookCanvas = forwardRef<LogbookCanvasHandle, LogbookCanvasProps>
           mx: 'auto',
           bgcolor: '#ffffff',
           borderRadius: 1,
-          overflow: 'hidden',
+          overflow: 'auto',
           border: '1px solid #cccccc',
           '@media print': {
             border: 'none',
