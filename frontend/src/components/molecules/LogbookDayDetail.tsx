@@ -19,7 +19,7 @@ export const LogbookDayDetail: React.FC<LogbookDayDetailProps> = ({ days }) => {
   return (
     <Box>
       {days.map((day) => (
-        <Accordion key={day.day} expanded={expanded === day.day} onChange={toggle(day.day)} disableGutters elevation={0} sx={{ '&:not(:last-child)': { mb: 1 }, borderRadius: 1, bgcolor: 'transparent' }}>
+        <Accordion key={day.day} expanded={expanded === day.day} onChange={toggle(day.day)} disableGutters elevation={0} sx={{ '&:not(:last-child)': { mb: 1 }, borderRadius: 1, bgcolor: 'transparent', overflowX: "hidden" }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#64748b' }} />} aria-controls={`logbook-day-${day.day + 1}-content`} id={`logbook-day-${day.day + 1}-header`}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
               <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0f172a' }}>Day {day.day + 1} — {day.date}</Typography>
@@ -27,7 +27,7 @@ export const LogbookDayDetail: React.FC<LogbookDayDetailProps> = ({ days }) => {
               <Typography variant="caption" sx={{ color: '#64748b' }}>{day.daily_miles.toFixed(0)} mi · {day.total_driving_hours.toFixed(1)} hrs driving</Typography>
             </Box>
           </AccordionSummary>
-          <AccordionDetails sx={{ p: 0 }}>
+          <AccordionDetails sx={{ p: 0, overflow: "auto" }}>
             <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }} role="table" aria-label={`Log events for day ${day.day + 1}`}>
               <Box component="thead">
                 <Box component="tr" sx={{ bgcolor: '#f1f5f9' }}>
