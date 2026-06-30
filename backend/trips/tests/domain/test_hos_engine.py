@@ -4,7 +4,7 @@ from datetime import date
 
 import pytest
 
-from trips.hos_engine import simulate_trip
+from trips.domain.hos_engine import simulate_trip
 
 
 def _verify_15min_snapping(events: list[dict]) -> None:

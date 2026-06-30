@@ -110,8 +110,8 @@ class TestPlanRoute:
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    @patch("trips.services.geocode")
-    @patch("trips.services.get_route")
+    @patch("trips.adapters.gateways.nominatim.NominatimGeocoder.geocode")
+    @patch("trips.adapters.gateways.osrm.OSRMRouter.get_route")
     def test_plan_route_with_cycle_schedule(self, mock_get_route, mock_geocode, api_client):
         mock_geocode.return_value = (40.7128, -74.0060)
         mock_get_route.return_value = {

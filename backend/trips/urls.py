@@ -1,8 +1,14 @@
-"""URL routing for all trips API endpoints — plan-route, geocode, auth, and HOS reference."""
-
 from django.urls import path
 
-from .reference_views import (
+from trips.adapters.controllers.trip_controller import (
+    GeocodeSearchView,
+    PlanRouteView,
+)
+from trips.adapters.controllers.auth_controller import (
+    TokenObtainView,
+    UserRegistrationView,
+)
+from trips.adapters.controllers.reference_controller import (
     CommerceDefinitionsView,
     ComplianceRequirementsView,
     DutyStatusDefinitionsView,
@@ -13,21 +19,12 @@ from .reference_views import (
     LoggingRequirementsView,
     ResourceLinksView,
 )
-from .views import (
-    GeocodeSearchView,
-    PlanRouteView,
-    TokenObtainView,
-    UserRegistrationView,
-)
 
 urlpatterns = [
-    # Trip planning
     path("plan-route/", PlanRouteView.as_view(), name="plan-route"),
     path("geocode/", GeocodeSearchView.as_view(), name="geocode-search"),
-    # Auth
     path("auth/token/", TokenObtainView.as_view(), name="token-obtain"),
     path("auth/register/", UserRegistrationView.as_view(), name="user-register"),
-    # FMCSA HOS Reference
     path("hos/summary/", HosSummaryView.as_view(), name="hos-summary"),
     path("hos/compliance/", ComplianceRequirementsView.as_view(), name="hos-compliance"),
     path("hos/commerce/", CommerceDefinitionsView.as_view(), name="hos-commerce"),
